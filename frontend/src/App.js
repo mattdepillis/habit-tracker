@@ -1,38 +1,18 @@
-import React, { Fragment, useEffect, useState } from 'react'
-// import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
+import React from 'react'
+import { Switch, Route } from 'react-router-dom'
 
-import Comp from './components/comp'
+import Header from './components/Header'
+import HomePage from './pages/HomePage'
+import AboutPage from './pages/AboutPage'
 
 const App = () => {
-
-  const [myArray, setResponseArray] = useState([])
-
-  const options = {
-    method: 'POST',
-    headers: { 'Content-Type':'application/json' },
-    body: JSON.stringify({
-      name: 'Matt',
-      body: 'connecting the frontend with the backend'
-    })
-  }
-
-  
-  const sendClickToBackend = async () => {
-    fetch(`${process.env.BACKEND_URL}`, options)
-      .then(response => response.json())
-      .then(response => setResponseArray([...myArray, response.response]))
-  }
-
   return (
     <div>
-      <h1>this is my habit tracker!</h1>
-      <Comp onClick={sendClickToBackend} />
-      <br></br>
-      {myArray.length > 0 &&
-        myArray.map(item => {
-          return <p>{item}</p>
-        })
-      }
+      <Header />
+      <Switch>
+        <Route exact path="/" component={HomePage}></Route>
+        <Route exact path="/about" component={AboutPage}></Route>
+      </Switch>
     </div>
   )
 }

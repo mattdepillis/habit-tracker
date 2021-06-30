@@ -3,6 +3,7 @@ const dotenv = require('dotenv')
 const path = require('path')
 
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const RemarkHTML = require('remark-html')
 
 // create object envKeys to use env variables in code
 const env = dotenv.config().parsed
@@ -23,6 +24,22 @@ module.exports = {
         test: /\.(js|jsx)/,
         exclude: /node_modules/,
         use: ['babel-loader']
+      },
+      {
+        test: /\.md$/,
+        use: [
+          {
+            loader: 'html-loader'
+          },
+          {
+            loader: 'remark-loader',
+            options: {
+              remarkOptions: {
+                plugins: [RemarkHTML]
+              }
+            }
+          }
+        ]
       }
     ]
   },
@@ -31,7 +48,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'habit-tracker',
+      title: 'kanban',
       template: './src/index.html'
     }),
     new webpack.DefinePlugin(envKeys)
