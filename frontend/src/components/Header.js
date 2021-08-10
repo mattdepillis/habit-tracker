@@ -14,7 +14,7 @@ const Header = () => {
   return (
     <KanbanNavbar bg="dark" variant="dark">
       <LinkContainer to="/">
-        <Navbar.Brand>Navbar</Navbar.Brand>
+        <Navbar.Brand>Kanban Board</Navbar.Brand>
       </LinkContainer>
       <Nav className="mr-auto">
         <LinkContainer to="/about">

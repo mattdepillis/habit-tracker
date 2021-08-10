@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const webpack = require('webpack')
 const dotenv = require('dotenv')
 const path = require('path')
@@ -40,11 +41,18 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader'
+        ]
       }
     ]
   },
   resolve: {
-    extensions: [ '*', '.js', '.jsx' ]
+    extensions: [ '*', '.js', '.jsx', '.scss', '.css' ]
   },
   plugins: [
     new HtmlWebpackPlugin({
