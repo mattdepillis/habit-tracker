@@ -1,9 +1,15 @@
 const express = require('express')
 const cors = require('cors')
-const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
 
-const taskRouter = require('./routes/tasks.js')
+const engineerRouter = require('./routes/engineerRouter')
+const engineerTaskRouter = require('./routes/engineerTaskRouter')
+const priorityRouter = require('./routes/priorityRouter')
+const productManagerRouter = require('./routes/productManagerRouter')
+const statusRouter = require('./routes/statusRouter')
+const taggedTaskRouter = require('./routes/taggedTaskRouter')
+const tagRouter = require('./routes/tagRouter')
+const taskRouter = require('./routes/tasksRouter')
+const typeRouter = require('./routes/typeRouter')
 
 require('dotenv').config()
 
@@ -11,17 +17,17 @@ const app = express()
 const port = process.env.PORT || 3001
 
 app.use(cors())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
+app.use('/engineer', engineerRouter)
+app.use('/engineer-tasks', engineerTaskRouter)
+app.use('/priority', priorityRouter)
+app.use('/product-manager', productManagerRouter)
+app.use('/status', statusRouter)
+app.use('/tagged-tasks', taggedTaskRouter)
+app.use('/tag', tagRouter)
 app.use('/tasks', taskRouter)
+app.use('/type', typeRouter)
 
-const mongooseParams = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true
-}
-
-mongoose.connect(`${process.env.MONGO_CONNECTION_STRING}`, mongooseParams)
-  .then(() => app.listen(port, () => console.log(`app running on port ${port}`)))
-  .catch((err) => console.error(err))
+app.listen(port, () => console.log(`app running on port ${port}`))
