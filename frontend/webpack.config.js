@@ -14,11 +14,13 @@ const envKeys = Object.keys(env).reduce((prev, next) => {
 }, {})
 
 module.exports = {
+  mode: 'development',
   entry: ['babel-polyfill', './src/index.js'],
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js'
   },
+  devtool: "source-map",
   module: {
     rules: [
       {
@@ -60,6 +62,5 @@ module.exports = {
       template: './src/index.html'
     }),
     new webpack.DefinePlugin(envKeys)
-  ],
-  mode: 'development'
+  ]
 }

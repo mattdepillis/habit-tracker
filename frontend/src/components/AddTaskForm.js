@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { Form, Col } from 'react-bootstrap'
-import TypeaheadQuestion from  './TypeaheadQuestion'
+// import MultiTypeaheadQuestion from  './MultiTypeaheadQuestion'
 import SingleTypeaheadQuestion from './SingleTypeaheadQuestion'
 
 const AddTaskForm = () => {
@@ -13,7 +13,7 @@ const AddTaskForm = () => {
       </Form.Group>
       <Form.Group as={Col}>
         <Form.Label>Status</Form.Label>
-        <TypeaheadQuestion
+        <SingleTypeaheadQuestion
           id="taskStatusTypeahead"
           path="/status"
           placeholder="Choose an option or create one"
@@ -21,12 +21,12 @@ const AddTaskForm = () => {
         />
       </Form.Group>
       <Form.Group as={Col}>
-        <Form.Label>Status Test</Form.Label>
+        <Form.Label>Type</Form.Label>
         <SingleTypeaheadQuestion
-          id="singleTypeahead"
-          path="/status"
-          placeholder="single..."
-          table="status"
+          id="taskTypeTypeahead"
+          path="/type"
+          placeholder="Choose an option or create one"
+          table="type"
         />
       </Form.Group>
     </Form>

@@ -3,7 +3,7 @@ import { Typeahead, TypeaheadInputMulti, Token } from 'react-bootstrap-typeahead
 import { fetchData } from '../utils/api'
 import 'react-bootstrap-typeahead/css/Typeahead.css'
 
-const TypeaheadQuestion = ({ id, path, placeholder, table }) => {
+const MultiTypeaheadQuestion = ({ id, path, placeholder, table }) => {
 
   const [selected, setSelected] = useState([])
   const [typeaheadOptions, setTypeaheadOptions] = useState([])
@@ -26,13 +26,13 @@ const TypeaheadQuestion = ({ id, path, placeholder, table }) => {
     setOptionColors({ ...colors })
   }, [typeaheadOptions])
 
-  // TODO: either split Typeaheads into single and multi versions, or write ternary below
-
   return (
     <Typeahead
+      allowNew
       id={id}
       multiple
       options={typeaheadOptions.map(option => option[`${table}_name`])}
+      newSelectionPrefix='Create '
       selected={selected}
       placeholder={placeholder}
       onChange={setSelected}
@@ -58,4 +58,4 @@ const TypeaheadQuestion = ({ id, path, placeholder, table }) => {
   )
 }
 
-export default TypeaheadQuestion
+export default MultiTypeaheadQuestion

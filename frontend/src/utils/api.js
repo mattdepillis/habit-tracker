@@ -6,7 +6,6 @@ export const fetchData = async (path) => {
 
   return fetch(`${process.env.BACKEND_URL}${path}`, options)
     .then(response => response.json())
-    // .then(data => console.log(data))
 }
 
 export const postData = async (path, body) => {
@@ -18,5 +17,4 @@ export const postData = async (path, body) => {
 
   fetch(`${process.env.BACKEND_URL}${path}`, options)
     .then(response => response.json())
-    .then(data => console.log(data))
 }
