@@ -8,6 +8,20 @@ export const fetchData = async (path) => {
     .then(response => response.json())
 }
 
+export const getSelectOptions = async (callback, path, table) => {
+  const data = await fetchData(path)
+    const formattedData = []
+    data.map(option => {
+      formattedData.push({
+        value: option[`${table}_name`],
+        label: option[`${table}_name`],
+        color: option.label_color
+      })
+    })
+    callback(formattedData)
+    return formattedData
+}
+
 export const postData = async (path, body) => {
   const options = {
     method: 'POST',

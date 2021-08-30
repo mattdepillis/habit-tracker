@@ -1,8 +1,11 @@
 import React from 'react'
-
 import { Form, Col } from 'react-bootstrap'
-// import MultiTypeaheadQuestion from  './MultiTypeaheadQuestion'
-import SingleTypeaheadQuestion from './SingleTypeaheadQuestion'
+
+import SelectQuestion from './FormQuestions/SelectQuestion'
+import MultiSelectQuestion from './FormQuestions/MultiSelectQuestion'
+
+// TODO: build the questions for the rest of the form items
+// TODO: figure out how to post data to union tables
 
 const AddTaskForm = () => {
   return (
@@ -13,20 +16,19 @@ const AddTaskForm = () => {
       </Form.Group>
       <Form.Group as={Col}>
         <Form.Label>Status</Form.Label>
-        <SingleTypeaheadQuestion
-          id="taskStatusTypeahead"
+        <SelectQuestion
+          id="statusSelect"
           path="/status"
-          placeholder="Choose an option or create one"
           table="status"
         />
       </Form.Group>
       <Form.Group as={Col}>
-        <Form.Label>Type</Form.Label>
-        <SingleTypeaheadQuestion
+        <Form.Label>Tags</Form.Label>
+        <MultiSelectQuestion
+          required
           id="taskTypeTypeahead"
-          path="/type"
-          placeholder="Choose an option or create one"
-          table="type"
+          path="/tag"
+          table="tag"
         />
       </Form.Group>
     </Form>

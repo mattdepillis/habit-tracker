@@ -6,10 +6,10 @@ const generateRandomColor = () => {
   return c
 }
 
-export const formatPostData = (value, path) => {
+export const formatPostData = (value, table) => {
   const obj = {}
   const color = generateRandomColor()
   obj.label_color = color
-  obj[`${path}`] = value
+  obj[`${table}`] = value
   return obj
 }
