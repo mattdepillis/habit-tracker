@@ -1,36 +1,27 @@
 import React from 'react'
 import { Form, Col } from 'react-bootstrap'
 
-import SelectQuestion from './FormQuestions/SelectQuestion'
-import MultiSelectQuestion from './FormQuestions/MultiSelectQuestion'
+import { renderQuestion } from './FormQuestions/QuestionFormats'
+import FormQuestions from './FormQuestions/FormQuestions'
 
-// TODO: build the questions for the rest of the form items
-// TODO: figure out how to post data to union tables
+const questionFormat = ({ id, label, type, path, table }) => {
+  return (
+  <Form.Group as={Col}>
+    <Form.Label>{label}</Form.Label>
+    {renderQuestion(id, type, path, table)}
+  </Form.Group>
+)}
+
+// TODO: figure out how to log all data to the console on form submission --> as a precursor to actual submission
+// TODO: figure out how to post to junction tables on task creation
 
 const AddTaskForm = () => {
+  // TODO: manage high-level form state here, like answers to each question, for submission processing
   return (
     <Form>
-      <Form.Group as={Col}>
-        <Form.Label>Task Name</Form.Label>
-        <Form.Control type="text" />
-      </Form.Group>
-      <Form.Group as={Col}>
-        <Form.Label>Status</Form.Label>
-        <SelectQuestion
-          id="statusSelect"
-          path="/status"
-          table="status"
-        />
-      </Form.Group>
-      <Form.Group as={Col}>
-        <Form.Label>Tags</Form.Label>
-        <MultiSelectQuestion
-          required
-          id="taskTypeTypeahead"
-          path="/tag"
-          table="tag"
-        />
-      </Form.Group>
+      {FormQuestions.map((question) => (
+        questionFormat(question)
+      ))}
     </Form>
   )
 }

@@ -5,10 +5,6 @@ import { formatPostData } from '../../utils/utils'
 import { getSelectOptions, postData } from '../../utils/api'
 import { multiSelectOptionColors } from './SelectQuestionStyles'
 
-// TODO: refactor getSelectOptions and put in api.js
-// TODO: refactor the form out into more components
-// TODO: organize src/components
-
 const MultiSelectQuestion = ({ id, path, table }) => {
   const [options, setOptions] = useState([])
   const [selected, setSelected] = useState([])
@@ -27,7 +23,7 @@ const MultiSelectQuestion = ({ id, path, table }) => {
       styles={multiSelectOptionColors}
       onChange={(value) => {
         setSelected(value)
-      }}
+      }}s
       onCreateOption={async (value) => {
         const formattedData = formatPostData(value, `${table}_name`)
         await postData(path, formattedData)
