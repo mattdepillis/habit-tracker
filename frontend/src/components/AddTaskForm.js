@@ -1,26 +1,41 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Form, Col } from 'react-bootstrap'
 
 import { renderQuestion } from './FormQuestions/QuestionFormats'
 import FormQuestions from './FormQuestions/FormQuestions'
 
-const questionFormat = ({ id, label, type, path, table }) => {
+const questionFormat = ({ id, label, type, path, table }, setAnswer) => {
   return (
   <Form.Group as={Col}>
     <Form.Label>{label}</Form.Label>
-    {renderQuestion(id, type, path, table)}
+    {renderQuestion(id, type, path, table, setAnswer)}
   </Form.Group>
 )}
 
-// TODO: figure out how to log all data to the console on form submission --> as a precursor to actual submission
+// TODO: format all questionIds to fit the tables in postgres
 // TODO: figure out how to post to junction tables on task creation
 
 const AddTaskForm = () => {
-  // TODO: manage high-level form state here, like answers to each question, for submission processing
+  const [answer, setAnswer] = useState({})
+  const [formAnswers, setFormAnswers] = useState({})
+
+  useEffect(() => {
+    if (Object.keys(answer).length > 0) {
+      const newObj = { ...formAnswers }
+      const key = Object.keys(answer)[0]
+      newObj[`${key}`] = answer[`${key}`]
+      setFormAnswers({ ...newObj })
+    }
+  }, [answer])
+
+  useEffect(() => {
+    console.log(formAnswers)
+  }, [formAnswers])
+
   return (
     <Form>
       {FormQuestions.map((question) => (
-        questionFormat(question)
+        questionFormat(question, setAnswer)
       ))}
     </Form>
   )

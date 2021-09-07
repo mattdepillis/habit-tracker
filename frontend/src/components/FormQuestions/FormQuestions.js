@@ -5,6 +5,16 @@ const FormQuestions = [
     type: 'text'
   },
   {
+    id: 'taskDescription',
+    label: 'Description',
+    type: 'textarea'
+  },
+  {
+    id: 'taskDeadline',
+    label: 'Deadline',
+    type: 'date'
+  },
+  {
     id: 'taskStatus',
     label: 'Status',
     type: 'singleSelect',

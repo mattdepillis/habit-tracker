@@ -4,8 +4,14 @@ import Creatable from 'react-select/creatable'
 import { formatPostData } from '../../utils/utils'
 import { getSelectOptions, postData } from '../../utils/api'
 import { multiSelectOptionColors } from './SelectQuestionStyles'
+import { handleChange } from '../../utils/utils'
 
-const MultiSelectQuestion = ({ id, path, table }) => {
+const MultiSelectQuestion = ({
+  id,
+  path,
+  table,
+  setAnswer
+}) => {
   const [options, setOptions] = useState([])
   const [selected, setSelected] = useState([])
 
@@ -23,7 +29,8 @@ const MultiSelectQuestion = ({ id, path, table }) => {
       styles={multiSelectOptionColors}
       onChange={(value) => {
         setSelected(value)
-      }}s
+        handleChange(setAnswer, id, value)
+      }}
       onCreateOption={async (value) => {
         const formattedData = formatPostData(value, `${table}_name`)
         await postData(path, formattedData)

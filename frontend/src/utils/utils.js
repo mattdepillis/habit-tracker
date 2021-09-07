@@ -13,3 +13,15 @@ export const formatPostData = (value, table) => {
   obj[`${table}`] = value
   return obj
 }
+
+export const handleChange = (setAnswer, id, value) => {
+  const obj = {}
+
+  obj[`${id}`] = typeof value === 'object'
+    ? Array.isArray(value)
+      ? value.map(item => item.value)
+      : value.value
+    : value
+
+  setAnswer({ ...obj })
+}
