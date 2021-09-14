@@ -20,7 +20,7 @@ module.exports = {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js'
   },
-  devtool: "source-map",
+  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -54,7 +54,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: [ '*', '.js', '.jsx', '.scss', '.css' ]
+    extensions: [ '*', '.js', '.jsx', '.scss', '.css', '.md' ]
   },
   plugins: [
     new HtmlWebpackPlugin({

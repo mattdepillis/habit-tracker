@@ -3,6 +3,7 @@ import { Form, Col } from 'react-bootstrap'
 
 import { renderQuestion } from './FormQuestions/QuestionFormats'
 import FormQuestions from './FormQuestions/FormQuestions'
+import { cleanFormAnswers } from '../utils/utils'
 
 const questionFormat = ({ id, label, type, path, table }, setAnswer) => {
   return (
@@ -21,10 +22,9 @@ const AddTaskForm = () => {
 
   useEffect(() => {
     if (Object.keys(answer).length > 0) {
-      const newObj = { ...formAnswers }
-      const key = Object.keys(answer)[0]
-      newObj[`${key}`] = answer[`${key}`]
-      setFormAnswers({ ...newObj })
+      let obj = { ...formAnswers }
+      obj = cleanFormAnswers(answer, obj)
+      setFormAnswers({ ...obj })
     }
   }, [answer])
 

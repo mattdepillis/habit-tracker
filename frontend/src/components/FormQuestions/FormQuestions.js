@@ -1,56 +1,56 @@
 const FormQuestions = [
   {
-    id: 'taskName',
+    id: 'task_name',
     label: 'Name',
     type: 'text'
   },
   {
-    id: 'taskDescription',
+    id: 'task_description',
     label: 'Description',
     type: 'textarea'
   },
   {
-    id: 'taskDeadline',
+    id: 'task_deadline',
     label: 'Deadline',
     type: 'date'
   },
   {
-    id: 'taskStatus',
+    id: 'task_status',
     label: 'Status',
     type: 'singleSelect',
     path: '/status',
     table: 'status'
   },
   {
-    id: 'taskPriority',
+    id: 'task_priority',
     label: 'Priority',
     type: 'singleSelect',
     path: '/priority',
     table: 'priority'
   },
   {
-    id: 'taskType',
+    id: 'task_type',
     label: 'Type',
     type: 'singleSelect',
     path: '/type',
     table: 'type'
   },
   {
-    id: 'taskTags',
+    id: 'task_tags',
     label: 'Tags',
     type: 'multiSelect',
     path: '/tag',
     table: 'tag'
   },
   {
-    id: 'taskEngineers',
+    id: 'task_engineers',
     label: 'Engineers',
     type: 'multiSelect',
     path: '/engineer',
     table: 'engineer'
   },
   {
-    id: 'taskProductManager',
+    id: 'task_product_manager',
     label: 'Product Manager',
     type: 'singleSelect',
     path: '/product-manager',
