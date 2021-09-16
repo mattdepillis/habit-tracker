@@ -13,10 +13,9 @@ const questionFormat = ({ id, label, type, path, table }, setAnswer) => {
   </Form.Group>
 )}
 
-// TODO: format all questionIds to fit the tables in postgres
-// TODO: figure out how to post to junction tables on task creation
-
-const AddTaskForm = () => {
+const AddTaskForm = ({
+  setModalFormState
+}) => {
   const [answer, setAnswer] = useState({})
   const [formAnswers, setFormAnswers] = useState({})
 
@@ -29,7 +28,7 @@ const AddTaskForm = () => {
   }, [answer])
 
   useEffect(() => {
-    console.log(formAnswers)
+    setModalFormState(formAnswers)
   }, [formAnswers])
 
   return (

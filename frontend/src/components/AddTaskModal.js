@@ -1,10 +1,20 @@
-import React from 'react'
-// import styled from 'styled-components'
+import React, { useEffect, useState } from 'react'
 
 import { Modal, Button } from 'react-bootstrap'
 import AddTaskForm from './AddTaskForm'
 
+// TODO: write a post function to post the completed task to the db
+// TODO: write a post function for the join tables
+
 const AddTaskModal = ({ show, onHide }) => {
+  let formComplete = false
+  const [formAnswers, setFormAnswers] = useState({})
+
+  useEffect(() => {
+    if (Object.keys(formAnswers).length === 9) formComplete = true
+    console.log('formComplete', formComplete)
+    console.log(formAnswers)
+  }, [formAnswers])
 
   return (
     <Modal
@@ -19,7 +29,9 @@ const AddTaskModal = ({ show, onHide }) => {
         <Modal.Title>Add a Task</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <AddTaskForm />
+        <AddTaskForm
+          setModalFormState={setFormAnswers}
+        />
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>Cancel</Button>
