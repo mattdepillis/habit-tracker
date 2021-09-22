@@ -1,10 +1,23 @@
-export const fetchData = async (path) => {
-  const options = {
-    method: 'GET',
-    headers: { 'Content-Type':'application/json' }
-  }
+import FormQuestions from '../components/FormQuestions/FormQuestions'
 
-  return fetch(`${process.env.BACKEND_URL}${path}`, options)
+const options = (method, body) => {
+  switch (method) {
+    case 'POST':
+      return {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify(body)
+      }
+    case 'GET':
+      return {
+        method: 'GET',
+        headers: { 'Content-Type':'application/json' }
+      }
+  }
+}
+
+export const fetchData = async (path) => {
+  return fetch(`${process.env.BACKEND_URL}${path}`, options('GET'))
     .then(response => response.json())
 }
 
@@ -23,12 +36,31 @@ export const getSelectOptions = async (callback, path, table) => {
 }
 
 export const postData = async (path, body) => {
-  const options = {
-    method: 'POST',
-    headers: { 'Content-Type':'application/json' },
-    body: JSON.stringify(body)
-  }
-
-  fetch(`${process.env.BACKEND_URL}${path}`, options)
+  fetch(`${process.env.BACKEND_URL}${path}`, options('POST', body))
     .then(response => response.json())
 }
+
+export const postTask = async (body) => {
+  const task = { ...body }
+  const junctionItems = []
+  const questions = [...FormQuestions]
+
+  // TODO: make this a separate utils.js function for separating out non-task-table properties
+  Object.keys(task).forEach(key => {
+    if (Array.isArray(task[`${key}`])) {
+      const obj = {}
+      const q = questions.find(item => item.id === key)
+      obj[`${q.path}`] = task[`${key}`]
+      junctionItems.push(obj)
+      delete task[`${key}`]
+    }
+  })
+
+  // TODO: post the task and fetch the id back from the backend
+  // TODO: find a good way to structure the data for sending to the junction table controllers + processing into table entries
+
+  console.log('task', task)
+  console.log('junctionItems', junctionItems)
+}
+
+// post each junction table element to junction table

@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react'
 
 import { Modal, Button } from 'react-bootstrap'
+import { postTask } from '../utils/api'
 import AddTaskForm from './AddTaskForm'
 
-// TODO: write a post function to post the completed task to the db
-// TODO: write a post function for the join tables
-
 const AddTaskModal = ({ show, onHide }) => {
-  let formComplete = false
+  const [formComplete, setFormComplete] = useState(false)
   const [formAnswers, setFormAnswers] = useState({})
 
   useEffect(() => {
-    if (Object.keys(formAnswers).length === 9) formComplete = true
-    console.log('formComplete', formComplete)
+    if (Object.keys(formAnswers).length === 9 && !formComplete) setFormComplete(true)
+    if (Object.keys(formAnswers).length < 9 && formComplete) setFormComplete(false)
     console.log(formAnswers)
   }, [formAnswers])
 
@@ -26,16 +24,28 @@ const AddTaskModal = ({ show, onHide }) => {
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title>Add a Task</Modal.Title>
+        <Modal.Title>
+          Add a Task
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <AddTaskForm
-          setModalFormState={setFormAnswers}
-        />
+        <AddTaskForm setModalFormState={setFormAnswers} />
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>Cancel</Button>
-        <Button variant="success" type="submit">Submit</Button>
+        <Button
+          variant="secondary"
+          onClick={onHide}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="success"
+          type="submit"
+          disabled={!formComplete}
+          onClick={() => postTask(formAnswers)}
+        >
+          Submit
+        </Button>
       </Modal.Footer>
     </Modal>
   )
