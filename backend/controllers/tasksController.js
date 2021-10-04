@@ -1,19 +1,145 @@
 const config = require('../knexfile').development
 const knex = require('knex')(config)
 
-// TODO: properly write this function
-// ? will have to be a bunch of table joins to properly return each task
 const getTasks = (req, res) => {
-  knex('tasks')
-    .returning('*')
-    .then(tasks => res.json(tasks))
-    .catch(err => res.json(err))
+  knex.raw(`
+    select t.task_id, task_description, task_deadline, task_status, task_type, task_priority,
+    task_product_manager, task_name, et.engineer_id, engineer_tasks_id, tt.tag_id, tagged_tasks_id,
+    engineer_name, e.label_color as engineer_label_color, tag_name, tg.label_color as tag_label_color
+    from tasks as t
+    left join engineer_tasks as et on t.task_id = et.task_id
+    left join tagged_tasks as tt on t.task_id = tt.task_id
+    left join engineer as e on et.engineer_id = e.engineer_id
+    left join tag as tg on tt.tag_id = tg.tag_id;
+  `)
+    .then(tasks => {
+      const cleanedTasks = []
+      tasks.rows.forEach(task => {
+        const t = {
+          task_id: task.task_id,
+          task_description: task.task_description,
+          task_deadline: task.task_deadline,
+          task_status: task.task_status,
+          task_type: task.task_type,
+          task_priority: task.task_priority,
+          task_product_manager: task.task_product_manager,
+          task_name: task.task_name,
+          task_engineers: [],
+          task_tags: []
+        }
+        if (!cleanedTasks.find(ct => ct.task_id === task.task_id)) cleanedTasks.push(t)
+
+        // get the task from cleanedTasks for engineer and tag array manipulations if applicable
+        const cleanedTask = cleanedTasks.find(ct => ct.task_id === task.task_id)
+      
+        /* if the tag/engineer_id is not null, and it's not already in its respective array inside
+        the cleanedTask object, then add it */
+        if (
+          task.tag_id
+          && !cleanedTask.task_tags.find(tag => tag.tag_id === task.tag_id)
+        ) {
+          cleanedTask.task_tags.push({
+            tag_id: task.tag_id,
+            tag_name: task.tag_name,
+            tag_label_color: task.tag_label_color
+          })
+        }
+
+        if (
+          task.engineer_id
+          && !cleanedTask.task_engineers.find(engineer => engineer.engineer_id === task.engineer_id)
+        ) {
+          cleanedTask.task_engineers.push({
+            engineer_id: task.engineer_id,
+            engineer_name: task.engineer_name,
+            engineer_label_color: task.engineer_label_color
+          })
+      }
+      })
+
+      res.json(cleanedTasks)
+    })
+    .catch(err => {
+      console.log(err)
+      res.json(err)
+    })
 }
 
-// TODO: write the deleteTask function and include in router
-// ! note: this will have to be a cascading delete to both the tagged_tasks and engineer_tasks tables
+const getTask = (req, res) => {
+  knex.raw(`
+    select t.task_id, task_description, task_deadline, task_status, task_type, task_priority,
+    task_product_manager, task_name, et.engineer_id, engineer_tasks_id, tt.tag_id, tagged_tasks_id,
+    engineer_name, e.label_color as engineer_label_color, tag_name, tg.label_color as tag_label_color
+    from tasks as t
+    left join engineer_tasks as et on t.task_id = et.task_id
+    left join tagged_tasks as tt on t.task_id = tt.task_id
+    left join engineer as e on et.engineer_id = e.engineer_id
+    left join tag as tg on tt.tag_id = tg.tag_id
+    where t.task_id=${req.params.id};
+  `)
+    .then(task => {
+      const t = task.rows[0]
+      console.log(task)
+      const cleanedTask = {
+        task_id: t.task_id,
+        task_description: t.task_description,
+        task_deadline: t.task_deadline,
+        task_status: t.task_status,
+        task_type: t.task_type,
+        task_priority: t.task_priority,
+        task_product_manager: t.task_product_manager,
+        task_name: t.task_name,
+        task_engineers: [],
+        task_tags: []
+      }
+      task.rows.forEach(row => {
+        if (
+          !cleanedTask.task_engineers.find(engineer => engineer.engineer_id === row.engineer_id)
+          && row.engineer_id
+        ) {
+          cleanedTask.task_engineers.push({
+            engineer_id: row.engineer_id,
+            engineer_name: row.engineer_name,
+            engineer_label_color: row.engineer_label_color
+          })
+        }
+        if (
+          !cleanedTask.task_tags.find(tag => tag.tag_id === row.tag_id)
+          && row.tag_id
+        ) {
+          cleanedTask.task_tags.push({
+            tag_id: row.tag_id,
+            tag_name: row.tag_name,
+            tag_label_color: row.tag_label_color
+          })
+        }
+      })
+      res.json(cleanedTask)
+    })
+    .catch(err => {
+      console.log(err)
+      res.json(err)
+    })
+}
+
 const deleteTask = async (req, res) => {
-  knex('tasks')
+  knex('engineer_tasks')
+  .where( { task_id: req.params.id } )
+  .delete()
+  .then(() => {
+    knex('tagged_tasks')
+      .where( { task_id: req.params.id })
+      .delete()
+      .catch(err => console.log(err))
+  })
+  .then(() => {
+    knex('tasks')
+      .where( { task_id: req.params.id })
+      .delete()
+      .catch(err => console.log(err))
+  })
+  .then(task => res.json(task))
+  .catch(err => res.json(err))
 }
 
 // TODO: write the updateTask function and include in router
@@ -77,4 +203,4 @@ const postTask = async (req, res) => {
     })
 }
 
-module.exports = { getTasks, postTask }
+module.exports = { getTasks, getTask, postTask, deleteTask }
