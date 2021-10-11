@@ -79,7 +79,7 @@ const getTask = (req, res) => {
   `)
     .then(task => {
       const t = task.rows[0]
-      console.log(task)
+
       const cleanedTask = {
         task_id: t.task_id,
         task_description: t.task_description,
@@ -122,50 +122,100 @@ const getTask = (req, res) => {
     })
 }
 
+// since foreign keys on junction tables are CASCADE deletes, obly have to delete the task
 const deleteTask = async (req, res) => {
-  knex('engineer_tasks')
-  .where( { task_id: req.params.id } )
-  .delete()
-  .then(() => {
-    knex('tagged_tasks')
-      .where( { task_id: req.params.id })
-      .delete()
-      .catch(err => console.log(err))
-  })
-  .then(() => {
-    knex('tasks')
-      .where( { task_id: req.params.id })
-      .delete()
-      .catch(err => console.log(err))
-  })
-  .then(task => res.json(task))
-  .catch(err => res.json(err))
+  knex('tasks')
+    .where( { task_id: req.params.id })
+    .delete()
+    .then(task => res.json(task))
+    .catch(err => res.json(err))
 }
 
-// TODO: write the updateTask function and include in router
-// ! note: this is a cascading update
-const updateTask = async (req, res) => {
+const formatTaskBody = async (body) => {
+  const statusId = await knex('status').where({ status_name: body.task_status }).then(status => status[0]?.status_id)
+  const priorityId = await knex('priority').where({ priority_name: body.task_priority }).then(id => id[0]?.priority_id)
+  const typeId = await knex('type').where({ type_name: body.task_type }).then(type => type[0]?.type_id)
+  const pmId = await knex('product_manager').where({ product_manager_name: body.task_product_manager }).then(pm => pm[0]?.product_manager_id)
 
-}
-
-const postTask = async (req, res) => {
-  const statusId = await knex('status').where({ status_name: req.body.task_status }).then(status => status[0]?.status_id)
-  const priorityId = await knex('priority').where({ priority_name: req.body.task_priority }).then(id => id[0]?.priority_id)
-  const typeId = await knex('type').where({ type_name: req.body.task_type }).then(type => type[0]?.type_id)
-  const pmId = await knex('product_manager').where({ product_manager_name: req.body.task_product_manager }).then(pm => pm[0]?.product_manager_id)
-
-  const bodyWithForeignKeys = {
-    task_name: req.body.task_name,
-    task_description: req.body.task_description,
-    task_deadline: req.body.task_deadline,
+  const formattedTaskBody = {
+    task_name: body.task_name,
+    task_description: body.task_description,
+    task_deadline: body.task_deadline,
     task_status: statusId,
     task_priority: priorityId,
     task_type: typeId,
     task_product_manager: pmId
   }
 
+  return formattedTaskBody
+}
+
+const updateTask = async (req, res) => {
+  const formattedTaskBody = await formatTaskBody(req.body)
+
   knex('tasks')
-    .insert(bodyWithForeignKeys)
+    .where( { task_id: req.params.id })
+    .returning('task_id')
+    .update(formattedTaskBody)
+    .then(taskId => {
+      taskId = taskId[0]
+
+      // update engineer_tasks
+      knex('engineer_tasks')
+        .where({ task_id: taskId })
+        .delete()
+        .then(() => {
+          req.body.task_engineers.forEach(engineer => {
+            knex('engineer')
+              .where({ engineer_name: engineer })
+              .then(engineer => {
+                knex.raw(`
+                  INSERT INTO engineer_tasks VALUES (${engineer[0].engineer_id}, ${taskId});
+                `)
+                .then(() => console.log(`successfully updated engineers for task ${taskId}`))
+                .catch(err => res.json(err))
+              })
+            })
+        })
+        .catch(err => {
+          console.log(err)
+          res.json(err)
+        })
+
+      // update tasks
+      knex('tagged_tasks')
+        .where({ task_id: taskId })
+        .delete()
+        .then(() => {
+          req.body.task_tags.forEach(tag => {
+            knex('tag')
+              .where({ tag_name: tag })
+              .then(tag => {
+                knex.raw(`
+                  INSERT INTO tagged_tasks VALUES (${tag[0].tag_id}, ${taskId});
+                `)
+                .then(() => console.log(`successfully updated tags for task ${taskId}`))
+                .catch(err => res.json(err))
+              })
+            })
+        })
+        .catch(err => {
+          console.log(err)
+          res.json(err)
+        })
+    })
+    .then(data => res.json(data))
+    .catch(err => {
+      console.log(err)
+      res.json(err)
+    })
+}
+
+const postTask = async (req, res) => {
+  const formattedTaskBody = await formatTaskBody(req.body)
+
+  knex('tasks')
+    .insert(formattedTaskBody)
     .returning('task_id')
     .then(taskId => {
       req.body.task_tags.forEach(tag => {
@@ -203,4 +253,4 @@ const postTask = async (req, res) => {
     })
 }
 
-module.exports = { getTasks, getTask, postTask, deleteTask }
+module.exports = { getTasks, getTask, postTask, updateTask, deleteTask }
