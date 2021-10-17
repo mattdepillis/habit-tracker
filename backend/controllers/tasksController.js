@@ -1,16 +1,25 @@
 const config = require('../knexfile').development
 const knex = require('knex')(config)
 
+// TODO: change this query to get all attributes basically - need things like priorityName, for ex.
 const getQueryBase = `
   select t.task_id, task_description, task_deadline, task_status, task_type, task_priority,
   task_product_manager, task_name, et.engineer_id, engineer_tasks_id, tt.tag_id, tagged_tasks_id,
-  engineer_name, e.label_color as engineer_label_color, tag_name, tg.label_color as tag_label_color
+  engineer_name, e.label_color as engineer_label_color, tag_name, tg.label_color as tag_label_color,
+  tp.priority_name
   from tasks as t
   left join engineer_tasks as et on t.task_id = et.task_id
   left join tagged_tasks as tt on t.task_id = tt.task_id
   left join engineer as e on et.engineer_id = e.engineer_id
   left join tag as tg on tt.tag_id = tg.tag_id
+  join priority as tp on tp.priority_id = t.task_priority
 `
+
+// const testQuery = `
+//   select t.task_name, p.priority_name as namedhgj
+//   from tasks as t
+//   join priority as p on t.task_priority = p.priority_id
+// `
 
 const getTasks = (req, res) => {
   knex.raw(`${getQueryBase};`)
@@ -23,7 +32,7 @@ const getTasks = (req, res) => {
           task_deadline: task.task_deadline,
           task_status: task.task_status,
           task_type: task.task_type,
-          task_priority: task.task_priority,
+          task_priority: task.priority_name,
           task_product_manager: task.task_product_manager,
           task_name: task.task_name,
           task_engineers: [],
@@ -78,7 +87,7 @@ const getTask = (req, res) => {
         task_deadline: t.task_deadline,
         task_status: t.task_status,
         task_type: t.task_type,
-        task_priority: t.task_priority,
+        task_priority: t.priority_name,
         task_product_manager: t.task_product_manager,
         task_name: t.task_name,
         task_engineers: [],
