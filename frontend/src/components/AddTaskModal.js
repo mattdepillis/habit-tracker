@@ -8,10 +8,13 @@ const AddTaskModal = ({ show, onHide }) => {
   const [formComplete, setFormComplete] = useState(false)
   const [formAnswers, setFormAnswers] = useState({})
 
+  // TODO: while postTask in flight, have submitting = true
+  // ! while submitting, a spinner should appear either in the button or on screen generally
+  // * after the promise has been resolved, then close the modal and reload the page
+
   useEffect(() => {
     if (Object.keys(formAnswers).length === 9 && !formComplete) setFormComplete(true)
     if (Object.keys(formAnswers).length < 9 && formComplete) setFormComplete(false)
-    console.log(formAnswers)
   }, [formAnswers])
 
   return (
@@ -42,7 +45,7 @@ const AddTaskModal = ({ show, onHide }) => {
           variant="success"
           type="submit"
           disabled={!formComplete}
-          onClick={() => postTask(formAnswers)}
+          onClick={async () => await postTask(formAnswers)}
         >
           Submit
         </Button>

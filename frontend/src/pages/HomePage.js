@@ -22,9 +22,14 @@ const HomePage = () => {
   return (
     <PageContent>
       <Header>Your Kanban Board</Header>
-      <AddButton onClick={setModalDisplay} />
+      <AddButton
+        onClick={setModalDisplay}
+      />
       <BoardContainer />
-      <AddTaskModal show={showModal} onHide={setModalDisplay} />
+      <AddTaskModal
+        show={showModal}
+        onHide={setModalDisplay}
+      />
     </PageContent>
   )
 }
