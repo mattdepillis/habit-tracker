@@ -1,25 +1,23 @@
 const config = require('../knexfile').development
 const knex = require('knex')(config)
 
-// TODO: change this query to get all attributes basically - need things like priorityName, for ex.
 const getQueryBase = `
-  select t.task_id, task_description, task_deadline, task_status, task_type, task_priority,
-  task_product_manager, task_name, et.engineer_id, engineer_tasks_id, tt.tag_id, tagged_tasks_id,
-  engineer_name, e.label_color as engineer_label_color, tag_name, tg.label_color as tag_label_color,
-  tp.priority_name
+  select t.task_id, t.task_description, t.task_deadline, ts.status_name as task_status,
+  ts.label_color as status_label_color, ty.type_name as task_type, ty.label_color as type_label_color,
+  tp.priority_name as task_priority, tp.label_color as priority_label_color,
+  tpm.product_manager_name as task_product_manager, tpm.label_color as product_manager_label_color,
+  task_name, et.engineer_id, engineer_tasks_id, tt.tag_id, tagged_tasks_id, engineer_name,
+  e.label_color as engineer_label_color, tag_name, tg.label_color as tag_label_color
   from tasks as t
+  left join status as ts on t.task_status = ts.status_id
+  left join type as ty on t.task_type = ty.type_id
+  left join priority as tp on t.task_priority = tp.priority_id
+  left join product_manager as tpm on t.task_product_manager = tpm.product_manager_id
   left join engineer_tasks as et on t.task_id = et.task_id
   left join tagged_tasks as tt on t.task_id = tt.task_id
   left join engineer as e on et.engineer_id = e.engineer_id
   left join tag as tg on tt.tag_id = tg.tag_id
-  join priority as tp on tp.priority_id = t.task_priority
 `
-
-// const testQuery = `
-//   select t.task_name, p.priority_name as namedhgj
-//   from tasks as t
-//   join priority as p on t.task_priority = p.priority_id
-// `
 
 const getTasks = (req, res) => {
   knex.raw(`${getQueryBase};`)
@@ -31,9 +29,13 @@ const getTasks = (req, res) => {
           task_description: task.task_description,
           task_deadline: task.task_deadline,
           task_status: task.task_status,
+          status_label_color: task.status_label_color,
           task_type: task.task_type,
-          task_priority: task.priority_name,
+          type_label_color: task.type_label_color,
+          task_priority: task.task_priority,
+          priority_label_color: task.priority_label_color,
           task_product_manager: task.task_product_manager,
+          product_manager_label_color: task.product_manager_label_color,
           task_name: task.task_name,
           task_engineers: [],
           task_tags: []
@@ -86,9 +88,13 @@ const getTask = (req, res) => {
         task_description: t.task_description,
         task_deadline: t.task_deadline,
         task_status: t.task_status,
+        status_label_color: t.status_label_color,
         task_type: t.task_type,
-        task_priority: t.priority_name,
+        type_label_color: t.type_label_color,
+        task_priority: t.task_priority,
+        priority_label_color: t.priority_label_color,
         task_product_manager: t.task_product_manager,
+        product_manager_label_color: t.product_manager_label_color,
         task_name: t.task_name,
         task_engineers: [],
         task_tags: []
