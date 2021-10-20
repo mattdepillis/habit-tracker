@@ -16,33 +16,59 @@ const StyledBadge = styled(Badge)`
   display: inline-block;
 `
 
+const StyledIcon = styled.i`
+  font-size: 1.2em;
+  margin: 1px;
+  display: inline-block;
+  line-height: 100%;
+`
+
+// TODO: fill these out with good bootstrap icons and adjust margin
+const renderIcon = (name) => {
+  switch (name) {
+    case 'status':
+      return <StyledIcon className='bi-ui-checks'></StyledIcon>
+    case 'type':
+      return <StyledIcon className='bi-file-earmark-arrow-up-fill'></StyledIcon>
+    case 'priority':
+      return <StyledIcon className='bi-exclamation-triangle-fill'></StyledIcon>
+    case 'product manager':
+      return <StyledIcon className='bi-diagram-2'></StyledIcon>
+    case 'tag':
+      return <StyledIcon className='bi-tag'></StyledIcon>
+    case 'engineer':
+      return <StyledIcon className='bi-terminal-fill'></StyledIcon>
+    default:
+      return <ItemText>{name}</ItemText>
+  }
+}
+
 const renderBadges = (array, name, task) => {
   const isString = task !== undefined
 
   return (
     <Fragment>
       {!isString &&
-        <ItemText>{name}</ItemText>
+          renderIcon(name)
       }
-      {array.map((item, i) => (
-        <Fragment key={i}>
-          {isString &&
-            <Fragment>
-              <ItemText>{item.replace('_', ' ')}</ItemText>
-              <StyledBadge
-                backgroundColor={task[`${item}_label_color`]}
+
+      {array.map((item, StyledIcon) => (
+        <Fragment key={StyledIcon}>
+          {isString
+            ? (<Fragment>
+                {renderIcon(item.replace('_', ' '))}
+                <StyledBadge
+                  backgroundColor={task[`${item}_label_color`]}
+                >
+                  {task[`task_${item}`]}
+                </StyledBadge>
+                <br />
+              </Fragment>)
+            : (<StyledBadge
+                backgroundColor={item[`${name}_label_color`]}
               >
-                {task[`task_${item}`]}
-              </StyledBadge>
-              <br />
-            </Fragment> 
-          }
-          {!isString &&
-            <StyledBadge
-              backgroundColor={item[`${name}_label_color`]}
-            >
-              {item[`${name}_name`]}
-            </StyledBadge>
+                {item[`${name}_name`]}
+              </StyledBadge>)
           }
         </Fragment>
       ))}

@@ -25,7 +25,9 @@ const HomePage = () => {
       <AddButton
         onClick={setModalDisplay}
       />
-      <BoardContainer />
+      <BoardContainer 
+        showModal={showModal}
+      />
       <AddTaskModal
         show={showModal}
         onHide={setModalDisplay}

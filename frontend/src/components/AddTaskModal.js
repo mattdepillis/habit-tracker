@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
 
-import { Modal, Button } from 'react-bootstrap'
+import { Modal, Button, Spinner } from 'react-bootstrap'
 import { postTask } from '../utils/api'
 import AddTaskForm from './AddTaskForm'
 
-const AddTaskModal = ({ show, onHide }) => {
+const AddTaskModal = ({
+  show,
+  onHide 
+}) => {
   const [formComplete, setFormComplete] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [formAnswers, setFormAnswers] = useState({})
-
-  // TODO: while postTask in flight, have submitting = true
-  // ! while submitting, a spinner should appear either in the button or on screen generally
-  // * after the promise has been resolved, then close the modal and reload the page
 
   useEffect(() => {
     if (Object.keys(formAnswers).length === 9 && !formComplete) setFormComplete(true)
@@ -45,9 +45,21 @@ const AddTaskModal = ({ show, onHide }) => {
           variant="success"
           type="submit"
           disabled={!formComplete}
-          onClick={async () => await postTask(formAnswers)}
+          onClick={async (e) => {
+            e.preventDefault()
+            setSubmitting(true)
+            await postTask(formAnswers)
+            setSubmitting(false)
+            onHide()
+          }}
         >
-          Submit
+          {submitting
+            ? <Spinner
+                animation="border"
+                variant="light" 
+              />
+            : 'Submit'
+          }
         </Button>
       </Modal.Footer>
     </Modal>

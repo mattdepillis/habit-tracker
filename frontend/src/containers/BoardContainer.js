@@ -16,7 +16,9 @@ const StyledContainer = styled(Container)`
   border-bottom: 3px solid #343a40;
 `
 
-const BoardContainer = () => {
+const BoardContainer = ({
+  showModal
+}) => {
   const [tasks, setTasks] = useState([])
 
   const setTaskList = async () => setTasks(await fetchData('/tasks'))
@@ -24,6 +26,10 @@ const BoardContainer = () => {
   useEffect(() => {
     setTaskList()
   }, [])
+
+  useEffect(() => {
+    if (!showModal) setTaskList()
+  }, [showModal])
 
   return (
     <Container>
