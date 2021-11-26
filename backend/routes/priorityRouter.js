@@ -6,7 +6,7 @@ const {
   postPriority,
   updatePriority,
   deletePriority
-} = require('../controllers/PriorityController.js')
+} = require('../controllers/priorityController.js')
 
 const router = express.Router()
 

@@ -1,0 +1,44 @@
+version: "3.3"
+services:
+  # Create frontend container
+  frontend: # Name of our service
+    build:
+      context: ./frontend # path to dockerfile
+      dockerfile: Dockerfile
+    ports: # Port binding to host from docker container
+      - 8080:8080
+    container_name: kanban-frontend
+    restart: always
+    links:
+      - backend
+    depends_on:
+      - backend
+
+  # Create backend container
+  backend:
+    # Create backend container  
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    container_name: kanban-backend
+    restart: always
+    links:
+      - kanban
+    depends_on:
+      - kanban
+    command: npm start
+    environment:
+      HOST: host.docker.internal
+  # Create database container
+  kanban:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: password
+    ports:
+      - 15432:5432
+    container_name: database-docker
+    restart: always
+    healthcheck:
+      test: exit 0

@@ -11,33 +11,35 @@ const ItemText = styled(Card.Text)`
 const StyledBadge = styled(Badge)`
   background-color: ${props => props.backgroundColor};
   color: white;
-  font-size: .8em;
+  font-size: .85em;
   margin: 1px;
   display: inline-block;
 `
 
 const StyledIcon = styled.i`
-  font-size: 1.2em;
+  font-size: 1.4em;
   margin: 1px;
   display: inline-block;
-  line-height: 100%;
+  vertical-align: middle;
 `
 
-// TODO: fill these out with good bootstrap icons and adjust margin
+const renderStyledIcon = classname =>
+  <StyledIcon className={classname}></StyledIcon>
+
 const renderIcon = (name) => {
   switch (name) {
     case 'status':
-      return <StyledIcon className='bi-ui-checks'></StyledIcon>
+      return renderStyledIcon('bi-ui-checks')
     case 'type':
-      return <StyledIcon className='bi-file-earmark-arrow-up-fill'></StyledIcon>
+      return renderStyledIcon('bi-file-earmark-arrow-up-fill')
     case 'priority':
-      return <StyledIcon className='bi-exclamation-triangle-fill'></StyledIcon>
+      return renderStyledIcon('bi-exclamation-triangle-fill')
     case 'product manager':
-      return <StyledIcon className='bi-diagram-2'></StyledIcon>
+      return renderStyledIcon('bi-diagram-2')
     case 'tag':
-      return <StyledIcon className='bi-tag'></StyledIcon>
+      return renderStyledIcon('bi-tag')
     case 'engineer':
-      return <StyledIcon className='bi-terminal-fill'></StyledIcon>
+      return renderStyledIcon('bi-terminal-fill')
     default:
       return <ItemText>{name}</ItemText>
   }
@@ -47,7 +49,7 @@ const renderBadges = (array, name, task) => {
   const isString = task !== undefined
 
   return (
-    <Fragment>
+    <Fragment style={{ border: '1px solid black'}}>
       {!isString &&
           renderIcon(name)
       }

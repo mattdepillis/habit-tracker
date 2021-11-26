@@ -16,6 +16,9 @@ const StyledContainer = styled(Container)`
   border-bottom: 3px solid #343a40;
 `
 
+// TODO: play with the container. This should be a grid and
+// TODO: container should be scrollable and have a border
+// TODO: create drag and drop functionality for cards with react-beautiful-dnd
 const BoardContainer = ({
   showModal
 }) => {

@@ -26,4 +26,4 @@ app.use('/tag', tagRouter)
 app.use('/tasks', taskRouter)
 app.use('/type', typeRouter)
 
-app.listen(port, () => console.log(`app running on port ${port}`))
+app.listen(port, "0.0.0.0", () => console.log(`app running on port ${port}`))

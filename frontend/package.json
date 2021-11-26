@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "env-cmd -f .env webpack serve --mode development --open --hot --port 3000",
+    "build-docker": "env-cmd -f .env webpack serve --mode development --host=0.0.0.0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -23,6 +24,7 @@
     "mini-css-extract-plugin": "^2.1.0",
     "node-sass": "^6.0.1",
     "react": "^17.0.2",
+    "react-beautiful-dnd": "^13.1.0",
     "react-bootstrap": "^1.6.1",
     "react-bootstrap-typeahead": "^5.1.4",
     "react-dom": "^17.0.2",
