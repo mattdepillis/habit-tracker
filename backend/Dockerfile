@@ -12,4 +12,4 @@ COPY routes/*.js /server/routes/
 
 EXPOSE 3001
 
-CMD ["npm", "start"]
+CMD [ "npm", "run", "docker-build" ]
