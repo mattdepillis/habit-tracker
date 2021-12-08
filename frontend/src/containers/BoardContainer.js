@@ -4,9 +4,10 @@ import styled from 'styled-components'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import { DragDropContext } from 'react-beautiful-dnd'
 
 import { fetchData } from '../utils/api'
-import TaskCard from '../components/TaskCard'
+import Column from './Column'
 
 const StyledContainer = styled(Container)`
   background-color: white;
@@ -26,6 +27,15 @@ const BoardContainer = ({
 
   const setTaskList = async () => setTasks(await fetchData('/tasks'))
 
+  const onDragEnd = (result) => {
+    const reorderedTasks = [...tasks]
+    // console.log(result.source.index)
+    const [removed] = reorderedTasks.splice(result.source.index, 1);
+    reorderedTasks.splice(result.destination.index, 0, removed)
+    // console.log(reorderedTasks)
+    setTasks(reorderedTasks)
+  }
+
   useEffect(() => {
     setTaskList()
   }, [])
@@ -34,22 +44,21 @@ const BoardContainer = ({
     if (!showModal) setTaskList()
   }, [showModal])
 
+  useEffect(() => {
+    console.log(tasks)
+  }, [tasks])
+
   return (
     <Container>
       <StyledContainer fluid>
-        <Row>
-          <Col>Ready</Col>
-          <Col>In Progress</Col>
-          <Col>Done</Col>
-        </Row>
-      </StyledContainer>
-      {tasks.map((task, i) => (
-        <Row key={i}>
-          <TaskCard 
-            task={task}
+        <DragDropContext
+          onDragEnd={onDragEnd}
+        >
+          <Column
+            tasks={tasks}
           />
-        </Row>
-      ))}
+        </DragDropContext>
+      </StyledContainer>
     </Container>
   )
 }
