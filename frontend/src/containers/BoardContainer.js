@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import styled from 'styled-components'
-
 import Container from 'react-bootstrap/Container'
 import { DragDropContext } from 'react-beautiful-dnd'
 
@@ -8,22 +7,22 @@ import { fetchData } from '../utils/api'
 import Column from './Column'
 
 const StyledContainer = styled(Container)`
-  background-color: white;
   margin: auto;
   margin-top: 10px;
   margin-bottom: 10px;
-  border-bottom: 3px solid #343a40;
+  padding: 0;
+  border-radius: 10px;
 `
 
 const ColumnContainer = styled(Container)`
   display: flex;
 `
 
-/* 
-  TODO: create multiple columns
-  TODO: sort tasks into multiple lists?
+/*
+  TODO: get ordering within the columns correct -- use the reducer function for this
+  TODO: enable dnd into other columns
+    ! add the task to a different column and remove it from the current
   TODO: make the entire container scrollable
-  TODO: redo styling for the container
 */
 
 const reducer = (state, action) => {
@@ -33,7 +32,12 @@ const reducer = (state, action) => {
       const { columns, tasks } = payload
 
       const newColumns = {}
-      columns.forEach(column => newColumns[column.column_name] = { tasks: [] })
+      columns.forEach(column => {
+        newColumns[column.column_name] = {
+          columnColor: column.column_color,
+          tasks: []
+        }
+      })
 
       tasks.forEach(task => newColumns[task.task_status].tasks.push(task))
 
@@ -78,23 +82,21 @@ const BoardContainer = ({
   }, [columns, tasks])
 
   return (
-    <Container>
-      <StyledContainer fluid>
-        <DragDropContext
-          onDragEnd={onDragEnd}
-        >
-          <ColumnContainer>
-            {Object.entries(state.columns).map(([key, value]) => (
-                <Column
-                  title={key}
-                  tasks={value.tasks}
-                />
-              ))
-            }
-          </ColumnContainer>
-        </DragDropContext>
-      </StyledContainer>
-    </Container>
+    <StyledContainer fluid>
+      <DragDropContext
+        onDragEnd={onDragEnd}
+      >
+        <ColumnContainer fluid>
+          {Object.entries(state.columns).map(([key, value]) => (
+            <Column
+              title={key}
+              color={value.columnColor}
+              tasks={value.tasks}
+            />
+          ))}
+        </ColumnContainer>
+      </DragDropContext>
+    </StyledContainer>
   )
 }
 

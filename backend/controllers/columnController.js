@@ -3,6 +3,7 @@ const knex = require('knex')(config)
 
 const getColumns = async (req, res) => {
   knex('columns')
+    .orderBy('column_id')
     .then(columns => res.json(columns))
     .catch(err => res.json(err))
 }

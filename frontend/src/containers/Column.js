@@ -4,15 +4,17 @@ import { Droppable } from 'react-beautiful-dnd'
 
 import TaskCard from '../components/TaskCard'
 
-const Container = styled.div`
+const ColumnContainer = styled.div`
+  background-color: white;
   margin: 8px;
-  border: 1px solid black;
-  border-radius: 2px;
-  width: 300px;
+  border-radius: 10px;
+  width: 25%;
+  padding: 5px;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 `
 
-const SmallContainer = styled.div`
-  margin: 1px;
+const CardContainer = styled.div`
+  margin: 0px 2px 10px 2px;
 `
 
 const Title = styled.h3`
@@ -21,14 +23,15 @@ const Title = styled.h3`
 
 const Column = ({
   title,
+  color,
   tasks
 }) => {
   return (
-    <Container>
-      <Title>{title}</Title>
+    <ColumnContainer>
+      <Title style={{ 'color' : `${color}` }}>{title}</Title>
       <Droppable droppableId={title}>
         {(provided) => (
-          <SmallContainer
+          <CardContainer
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
@@ -39,10 +42,10 @@ const Column = ({
               />
             ))}
             {provided.placeholder} 
-          </SmallContainer>
+          </CardContainer>
         )}
       </Droppable>
-    </Container>
+    </ColumnContainer>
   )
 }
 
