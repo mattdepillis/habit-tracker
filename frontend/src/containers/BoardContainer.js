@@ -1,9 +1,7 @@
-import React, { useState, useEffect} from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import styled from 'styled-components'
 
 import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 import { DragDropContext } from 'react-beautiful-dnd'
 
 import { fetchData } from '../utils/api'
@@ -17,26 +15,55 @@ const StyledContainer = styled(Container)`
   border-bottom: 3px solid #343a40;
 `
 
-// TODO: play with the container. This should be a grid and
-// TODO: container should be scrollable and have a border
-// TODO: create drag and drop functionality for cards with react-beautiful-dnd
+const ColumnContainer = styled(Container)`
+  display: flex;
+`
+
+/* 
+  TODO: create multiple columns
+  TODO: sort tasks into multiple lists?
+  TODO: make the entire container scrollable
+  TODO: redo styling for the container
+*/
+
+const reducer = (state, action) => {
+  const { type, payload } = action
+  switch (type) {
+    case 'setState':
+      const { columns, tasks } = payload
+
+      const newColumns = {}
+      columns.forEach(column => newColumns[column.column_name] = { tasks: [] })
+
+      tasks.forEach(task => newColumns[task.task_status].tasks.push(task))
+
+      return { ...state, columns: newColumns }
+    default:
+      return { ...state }
+  }
+}
+
 const BoardContainer = ({
   showModal
 }) => {
+  const [columns, setColumns] = useState([])
   const [tasks, setTasks] = useState([])
 
+  const initialState = { columns: {} }
+  const [state, dispatch] = useReducer(reducer, initialState)
+
+  const setKanbanColumns = async () => setColumns(await fetchData('/column'))
   const setTaskList = async () => setTasks(await fetchData('/tasks'))
 
   const onDragEnd = (result) => {
     const reorderedTasks = [...tasks]
-    // console.log(result.source.index)
     const [removed] = reorderedTasks.splice(result.source.index, 1);
     reorderedTasks.splice(result.destination.index, 0, removed)
-    // console.log(reorderedTasks)
     setTasks(reorderedTasks)
   }
 
   useEffect(() => {
+    setKanbanColumns()
     setTaskList()
   }, [])
 
@@ -45,8 +72,10 @@ const BoardContainer = ({
   }, [showModal])
 
   useEffect(() => {
-    console.log(tasks)
-  }, [tasks])
+    if (columns.length > 0 && tasks.length > 0) {
+      dispatch({ type: 'setState', payload: { columns, tasks } })
+    }
+  }, [columns, tasks])
 
   return (
     <Container>
@@ -54,9 +83,15 @@ const BoardContainer = ({
         <DragDropContext
           onDragEnd={onDragEnd}
         >
-          <Column
-            tasks={tasks}
-          />
+          <ColumnContainer>
+            {Object.entries(state.columns).map(([key, value]) => (
+                <Column
+                  title={key}
+                  tasks={value.tasks}
+                />
+              ))
+            }
+          </ColumnContainer>
         </DragDropContext>
       </StyledContainer>
     </Container>

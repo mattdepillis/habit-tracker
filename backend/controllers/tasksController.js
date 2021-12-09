@@ -251,7 +251,7 @@ const updateTask = async (req, res) => {
     })
 }
 
-// since foreign keys on junction tables are CASCADE deletes, obly have to delete the task
+// since foreign keys on junction tables are CASCADE deletes, only have to delete the task
 const deleteTask = async (req, res) => {
   knex('tasks')
     .where( { task_id: req.params.id })

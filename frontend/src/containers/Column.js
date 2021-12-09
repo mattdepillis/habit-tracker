@@ -8,6 +8,7 @@ const Container = styled.div`
   margin: 8px;
   border: 1px solid black;
   border-radius: 2px;
+  width: 300px;
 `
 
 const SmallContainer = styled.div`
@@ -18,11 +19,14 @@ const Title = styled.h3`
   padding: 8px;
 `
 
-const Column = ({ tasks }) => {
+const Column = ({
+  title,
+  tasks
+}) => {
   return (
     <Container>
-      <Title>Todos</Title>
-      <Droppable droppableId={"1"}>
+      <Title>{title}</Title>
+      <Droppable droppableId={title}>
         {(provided) => (
           <SmallContainer
             ref={provided.innerRef}
