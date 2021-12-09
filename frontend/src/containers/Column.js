@@ -19,6 +19,7 @@ const CardContainer = styled.div`
 
 const Title = styled.h3`
   padding: 8px;
+  color: ${props => props.color || 'black'}
 `
 
 const Column = ({
@@ -28,7 +29,7 @@ const Column = ({
 }) => {
   return (
     <ColumnContainer>
-      <Title style={{ 'color' : `${color}` }}>{title}</Title>
+      <Title color={color}>{title}</Title>
       <Droppable droppableId={title}>
         {(provided) => (
           <CardContainer
@@ -37,6 +38,7 @@ const Column = ({
           >
             {tasks.map((task, i) => (
               <TaskCard
+                key={i}
                 task={task}
                 i={i}
               />

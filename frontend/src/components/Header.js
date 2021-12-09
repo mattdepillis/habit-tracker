@@ -18,7 +18,7 @@ const Header = () => {
       </LinkContainer>
       <Nav className="mr-auto">
         <LinkContainer to="/about">
-          <Nav.Link>About this project</Nav.Link>
+          <Nav.Link>/about</Nav.Link>
         </LinkContainer>
       </Nav>
     </KanbanNavbar>

@@ -25,6 +25,7 @@ const ColumnContainer = styled(Container)`
   TODO: make the entire container scrollable
 */
 
+// TODO: redeclare scoped vars with let, not const
 const reducer = (state, action) => {
   const { type, payload } = action
   switch (type) {
@@ -42,6 +43,13 @@ const reducer = (state, action) => {
       tasks.forEach(task => newColumns[task.task_status].tasks.push(task))
 
       return { ...state, columns: newColumns }
+
+    case 'reorderColumn':
+      const { columnName, reorderedTasks } = payload
+
+      const newCols = { ...state.columns }
+      newCols[`${columnName}`].tasks = reorderedTasks
+      return { ...state, columns: newCols }
     default:
       return { ...state }
   }
@@ -59,11 +67,18 @@ const BoardContainer = ({
   const setKanbanColumns = async () => setColumns(await fetchData('/column'))
   const setTaskList = async () => setTasks(await fetchData('/tasks'))
 
+  /*
+    TODO: support for dragging across columns -- updating state properly
+    ! source and destination
+  */
   const onDragEnd = (result) => {
-    const reorderedTasks = [...tasks]
+    const columnName = result.destination.droppableId
+    const reorderedTasks = [...state.columns[`${columnName}`].tasks]
+
     const [removed] = reorderedTasks.splice(result.source.index, 1);
     reorderedTasks.splice(result.destination.index, 0, removed)
-    setTasks(reorderedTasks)
+
+    dispatch({ type: 'reorderColumn', payload: { columnName, reorderedTasks } })
   }
 
   useEffect(() => {
@@ -89,6 +104,7 @@ const BoardContainer = ({
         <ColumnContainer fluid>
           {Object.entries(state.columns).map(([key, value]) => (
             <Column
+              key={key}
               title={key}
               color={value.columnColor}
               tasks={value.tasks}

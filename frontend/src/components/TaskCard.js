@@ -53,7 +53,7 @@ const renderBadges = (array, name, task) => {
     <Fragment>
       <div>
         {!isString &&
-            renderIcon(name)
+          renderIcon(name)
         }
 
         {array.map((item, StyledIcon) => (
