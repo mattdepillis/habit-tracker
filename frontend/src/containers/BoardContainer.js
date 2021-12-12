@@ -4,6 +4,7 @@ import Container from 'react-bootstrap/Container'
 import { DragDropContext } from 'react-beautiful-dnd'
 
 import { fetchData } from '../utils/api'
+import { reducer } from '../utils/dnd'
 import Column from './Column'
 
 const StyledContainer = styled(Container)`
@@ -18,43 +19,6 @@ const ColumnContainer = styled(Container)`
   display: flex;
 `
 
-/*
-  TODO: get ordering within the columns correct -- use the reducer function for this
-  TODO: enable dnd into other columns
-    ! add the task to a different column and remove it from the current
-  TODO: make the entire container scrollable
-*/
-
-// TODO: redeclare scoped vars with let, not const
-const reducer = (state, action) => {
-  const { type, payload } = action
-  switch (type) {
-    case 'setState':
-      const { columns, tasks } = payload
-
-      const newColumns = {}
-      columns.forEach(column => {
-        newColumns[column.column_name] = {
-          columnColor: column.column_color,
-          tasks: []
-        }
-      })
-
-      tasks.forEach(task => newColumns[task.task_status].tasks.push(task))
-
-      return { ...state, columns: newColumns }
-
-    case 'reorderColumn':
-      const { columnName, reorderedTasks } = payload
-
-      const newCols = { ...state.columns }
-      newCols[`${columnName}`].tasks = reorderedTasks
-      return { ...state, columns: newCols }
-    default:
-      return { ...state }
-  }
-}
-
 const BoardContainer = ({
   showModal
 }) => {
@@ -68,17 +32,32 @@ const BoardContainer = ({
   const setTaskList = async () => setTasks(await fetchData('/tasks'))
 
   /*
-    TODO: support for dragging across columns -- updating state properly
-    ! source and destination
+    TODO: when moved to a new column, API call to replace the status of the task
   */
   const onDragEnd = (result) => {
-    const columnName = result.destination.droppableId
-    const reorderedTasks = [...state.columns[`${columnName}`].tasks]
+    const {
+      source: { index: sourceIndex, droppableId: sourceColumn },
+      destination: { index: destinationIndex, droppableId: destinationColumn }
+    } = result
 
-    const [removed] = reorderedTasks.splice(result.source.index, 1);
-    reorderedTasks.splice(result.destination.index, 0, removed)
+    const destinationTasks = [...state.columns[`${destinationColumn}`].tasks]
 
-    dispatch({ type: 'reorderColumn', payload: { columnName, reorderedTasks } })
+    if (sourceColumn === destinationColumn) {
+      const [removed] = destinationTasks.splice(sourceIndex, 1)
+      destinationTasks.splice(destinationIndex, 0, removed)
+
+      dispatch({ type: 'dragWithinColumn', payload: { destinationColumn, destinationTasks } })
+    } else {
+      const sourceTasks = [...state.columns[`${sourceColumn}`].tasks]
+
+      const [removed] = sourceTasks.splice(sourceIndex, 1)
+      destinationTasks.splice(destinationIndex, 0, removed)
+
+      dispatch({
+        type: 'dragToDifferentColumn',
+        payload: { sourceColumn, destinationColumn, sourceTasks, destinationTasks }
+      })
+    }
   }
 
   useEffect(() => {
