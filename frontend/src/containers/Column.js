@@ -1,14 +1,13 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import styled from 'styled-components'
 import { Droppable } from 'react-beautiful-dnd'
 
-import TaskCard from '../components/TaskCard'
+import TaskCardCover from '../components/TaskCardCover'
 
 const ColumnContainer = styled.div`
   background-color: white;
-  margin: 8px;
   border-radius: 10px;
-  width: 25%;
+  width: ${props => props.width || '24'}%;
   padding: 5px;
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 `
@@ -25,30 +24,31 @@ const Title = styled.h3`
 const Column = ({
   title,
   color,
-  tasks
-}) => {
-  return (
-    <ColumnContainer>
-      <Title color={color}>{title}</Title>
-      <Droppable droppableId={title}>
-        {(provided) => (
-          <CardContainer
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            {tasks.map((task, i) => (
-              <TaskCard
-                key={i}
-                task={task}
-                i={i}
-              />
-            ))}
-            {provided.placeholder} 
-          </CardContainer>
-        )}
-      </Droppable>
-    </ColumnContainer>
-  )
-}
+  tasks,
+  width
+}) => (
+  <ColumnContainer
+    width={width}
+  >
+    <Title color={color}>{title}</Title>
+    <Droppable droppableId={title}>
+      {(provided) => (
+        <CardContainer
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+        >
+          {tasks.map((task, i) => (
+            <TaskCardCover
+              key={i}
+              task={task}
+              i={i}
+            />
+          ))}
+          {provided.placeholder} 
+        </CardContainer>
+      )}
+    </Droppable>
+  </ColumnContainer>
+)
 
 export default Column

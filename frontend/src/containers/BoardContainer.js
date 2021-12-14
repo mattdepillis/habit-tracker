@@ -1,22 +1,23 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import styled from 'styled-components'
-import Container from 'react-bootstrap/Container'
 import { DragDropContext } from 'react-beautiful-dnd'
 
 import { fetchData } from '../utils/api'
 import { reducer } from '../utils/dnd'
 import Column from './Column'
 
-const StyledContainer = styled(Container)`
-  margin: auto;
+const StyledContainer = styled.div`
   margin-top: 10px;
   margin-bottom: 10px;
-  padding: 0;
   border-radius: 10px;
+  width: 100%;
 `
 
-const ColumnContainer = styled(Container)`
+const ColumnContainer = styled.div`
   display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 100%;
 `
 
 const BoardContainer = ({
@@ -87,6 +88,7 @@ const BoardContainer = ({
               title={key}
               color={value.columnColor}
               tasks={value.tasks}
+              width={(100 / columns.length - 1)}
             />
           ))}
         </ColumnContainer>
