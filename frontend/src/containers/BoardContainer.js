@@ -8,15 +8,14 @@ import Column from './Column'
 
 const StyledContainer = styled.div`
   margin-top: 10px;
-  margin-bottom: 10px;
   border-radius: 10px;
   width: 100%;
 `
 
 const ColumnContainer = styled.div`
   display: flex;
-  justify-content: space-between;
   flex-direction: row;
+  justify-content: space-between;
   width: 100%;
 `
 
@@ -77,11 +76,11 @@ const BoardContainer = ({
   }, [columns, tasks])
 
   return (
-    <StyledContainer fluid>
+    <StyledContainer>
       <DragDropContext
         onDragEnd={onDragEnd}
       >
-        <ColumnContainer fluid>
+        <ColumnContainer>
           {Object.entries(state.columns).map(([key, value]) => (
             <Column
               key={key}
@@ -89,6 +88,7 @@ const BoardContainer = ({
               color={value.columnColor}
               tasks={value.tasks}
               width={(100 / columns.length - 1)}
+              length={value.tasks.length}
             />
           ))}
         </ColumnContainer>

@@ -4,10 +4,8 @@ import { Navbar, Nav } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
 
 const KanbanNavbar = styled(Navbar)`
-  width: 90%;
   margin: auto;
-  border-radius: 10px;
-  margin-top: 5px;
+  padding-left: 5%;
 `
 
 const Header = () => {
