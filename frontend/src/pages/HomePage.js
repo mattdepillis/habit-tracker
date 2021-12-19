@@ -15,6 +15,7 @@ const MenuWrapper = styled.div`
   width: fit-content;
   max-height: 50px;
   margin: 10px 0 10px 0;
+  z-index: 2;
 `
 
 const ButtonWrapper = styled.div`
@@ -41,8 +42,6 @@ const BoardContainerWrapper = styled.div`
 
 const PropertyToast = styled(ToastTab)`
   position: relative;
-  // top: 20px;
-  color: blue;
   float: right;
 `
 
@@ -55,6 +54,8 @@ const HomePage = () => {
 
   const setModalDisplay = () => setShowModal(!showModal)
   const setToastDisplay = () => setShowToast(!showToast)
+
+  const properties = FormQuestions.map(q => { return { id: q.id, label: q.label } })
 
   return (
     <PageContent>
@@ -72,6 +73,7 @@ const HomePage = () => {
             <PropertyToast
               show={showToast}
               onHide={setToastDisplay}
+              properties={properties}
             />
           </ToastWrapper>
         </MenuWrapper>

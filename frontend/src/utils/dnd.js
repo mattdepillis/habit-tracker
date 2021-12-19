@@ -1,3 +1,4 @@
+// TODO: comment here
 export const reducer = (state, action) => {
   const { type, payload } = action
   let newColumns = {}

@@ -1,10 +1,28 @@
 import React from 'react'
 import styled from 'styled-components'
 import Toast from 'react-bootstrap/Toast'
+import Switch from '@mui/material/Switch'
 
 const Header = styled(Toast.Header)`
   display: flex;
   justify-content: space-between;
+`
+
+const PropertyContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  line-height: 100%;
+  justify-content: space-between;
+`
+
+const Label = styled.h1`
+  align-self: center;
+  font-size: 1em;
+  margin: 0 100px 0 5px;
+`
+
+const PropertyToast = styled(Toast)`
+  background-color: white;
 `
 
 /*
@@ -15,19 +33,35 @@ const Header = styled(Toast.Header)`
 const ToastTab = ({
   className,
   show,
-  onHide
+  onHide,
+  properties
 }) => {
+  /* 
+    TODO: handle state of which properties to show.
+      * can create an array of properties to show
+        * default properties -- TBD
+      * pass state up to the homepage component
+      * homepage component will pass state down to the TaskCardCover
+      * when a property is shown, color the text green?
+  */
+  console.log(properties)
   return (
-    <Toast className={className} show={show} onClose={onHide}>
+    <PropertyToast className={className} show={show} onClose={onHide}>
       <Header>
         <strong className="me-auto">Properties</strong>
       </Header>
       <Toast.Body>
-        Woohoo, you're reading this text in a Toast!
-        <br />
-        let me tell you a little bit about myself...
+        {properties
+          .filter(p => ['Description', 'Name'].indexOf(p.label) < 0).map((property) => (
+          <PropertyContainer>
+            <Label key={property.id}>
+              {property.label}
+            </Label>
+            <Switch />
+          </PropertyContainer>
+        ))}
       </Toast.Body>
-    </Toast>
+    </PropertyToast>
   )
 }
 
