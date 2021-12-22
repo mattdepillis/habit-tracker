@@ -27,6 +27,7 @@ export const reducer = (state, action) => {
       return { ...state, columns: newColumns }
     }
 
+    // TODO: make a fetch call to change the status of the task
     case 'dragToDifferentColumn': {
       const { sourceColumn, destinationColumn, sourceTasks, destinationTasks } = payload
 

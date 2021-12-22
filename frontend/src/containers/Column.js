@@ -46,7 +46,8 @@ const Column = ({
   color,
   tasks,
   width,
-  length
+  length,
+  showProperties
 }) => (
   <ColumnContainer
     width={width}
@@ -66,6 +67,7 @@ const Column = ({
               key={i}
               task={task}
               i={i}
+              showProperties={showProperties}
             />
           ))}
           {provided.placeholder} 

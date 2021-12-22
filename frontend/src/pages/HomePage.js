@@ -51,6 +51,7 @@ const PropertyToast = styled(ToastTab)`
 const HomePage = () => {
   const [showModal, setShowModal] = useState(false)
   const [showToast, setShowToast] = useState(false)
+  const [showProperties, setShowProperties] = useState(['Status', 'Tags'])
 
   const setModalDisplay = () => setShowModal(!showModal)
   const setToastDisplay = () => setShowToast(!showToast)
@@ -74,11 +75,14 @@ const HomePage = () => {
               show={showToast}
               onHide={setToastDisplay}
               properties={properties}
+              showProperties={showProperties}
+              setShowProperties={setShowProperties}
             />
           </ToastWrapper>
         </MenuWrapper>
         <BoardContainer
           showModal={showModal}
+          showProperties={showProperties}
         />
       </BoardContainerWrapper>
       <AddTaskModal

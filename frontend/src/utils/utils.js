@@ -45,3 +45,39 @@ export const cleanFormAnswers = (answer, obj) => {
 
   return obj
 }
+
+/*
+  places the values for each task property into an array of objects to be converted into colored badges
+  on the TaskCardCovers.
+*/
+export const createPropertyArray = (task, property) => {
+  let propertyArray = []
+  
+  if (property === 'engineers' || property === 'tags') {
+    const propertySingular = property.substring(0, property.length - 1)
+
+    task[`task_${property}`].forEach(obj => {
+      propertyArray.push({
+        name: obj[`${propertySingular}_name`],
+        color: obj[`${propertySingular}_label_color`]
+      })
+    })
+  } else {
+    let value = task[`task_${property}`]
+    if (property === 'deadline') {
+      value = new Date(task[`task_${property}`])
+        .toLocaleString('en', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        })
+    }
+
+    propertyArray = [{
+      name: value,
+      color: task[`${property}_label_color`]
+    }]
+  }
+
+  return propertyArray
+}

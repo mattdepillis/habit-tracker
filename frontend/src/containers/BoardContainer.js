@@ -20,7 +20,8 @@ const ColumnContainer = styled.div`
 `
 
 const BoardContainer = ({
-  showModal
+  showModal,
+  showProperties
 }) => {
   const [columns, setColumns] = useState([])
   const [tasks, setTasks] = useState([])
@@ -75,6 +76,10 @@ const BoardContainer = ({
     }
   }, [columns, tasks])
 
+  useEffect(() => {
+    console.log(tasks)
+  }, [])
+
   return (
     <StyledContainer>
       <DragDropContext
@@ -89,6 +94,7 @@ const BoardContainer = ({
               tasks={value.tasks}
               width={(100 / columns.length - 1)}
               length={value.tasks.length}
+              showProperties={showProperties}
             />
           ))}
         </ColumnContainer>

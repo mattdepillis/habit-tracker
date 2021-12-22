@@ -34,17 +34,20 @@ const ToastTab = ({
   className,
   show,
   onHide,
-  properties
+  properties,
+  showProperties,
+  setShowProperties
 }) => {
-  /* 
-    TODO: handle state of which properties to show.
-      * can create an array of properties to show
-        * default properties -- TBD
-      * pass state up to the homepage component
-      * homepage component will pass state down to the TaskCardCover
-      * when a property is shown, color the text green?
-  */
-  console.log(properties)
+  // * modify the array of properties to show and return to parent homepage
+  const handleChange = (label, checked) => {
+    const index = showProperties.indexOf(label)
+    const newOptions = [ ...showProperties ]
+
+    checked ? newOptions.splice(index, 1) : newOptions.push(label)
+
+    setShowProperties(newOptions)
+  }
+
   return (
     <PropertyToast className={className} show={show} onClose={onHide}>
       <Header>
@@ -52,14 +55,20 @@ const ToastTab = ({
       </Header>
       <Toast.Body>
         {properties
-          .filter(p => ['Description', 'Name'].indexOf(p.label) < 0).map((property) => (
-          <PropertyContainer>
-            <Label key={property.id}>
-              {property.label}
-            </Label>
-            <Switch />
-          </PropertyContainer>
-        ))}
+          .filter(p => ['Description', 'Name'].indexOf(p.label) < 0).map((property, i) => {
+            const checked = showProperties.indexOf(property.label) >= 0
+            return (
+              <PropertyContainer key={i}>
+                <Label key={property.id}>
+                  {property.label}
+                </Label>
+                <Switch
+                  checked={checked}
+                  onClick={() => handleChange(property.label, checked)}
+                />
+              </PropertyContainer>
+          )}
+        )}
       </Toast.Body>
     </PropertyToast>
   )
