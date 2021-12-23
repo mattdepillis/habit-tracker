@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer } from 'react'
 import styled from 'styled-components'
 import { DragDropContext } from 'react-beautiful-dnd'
 
-import { fetchData } from '../utils/api'
+import { fetchData, updateTask, getTask } from '../utils/api'
 import { reducer } from '../utils/dnd'
 import Column from './Column'
 
@@ -25,6 +25,7 @@ const BoardContainer = ({
 }) => {
   const [columns, setColumns] = useState([])
   const [tasks, setTasks] = useState([])
+  const [changedTask, setChangedTask] = useState(-1)
 
   const initialState = { columns: {} }
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -32,14 +33,14 @@ const BoardContainer = ({
   const setKanbanColumns = async () => setColumns(await fetchData('/column'))
   const setTaskList = async () => setTasks(await fetchData('/tasks'))
 
-  /*
-    TODO: when moved to a new column, API call to replace the status of the task
-  */
-  const onDragEnd = (result) => {
+  const onDragEnd = async (result) => {
     const {
       source: { index: sourceIndex, droppableId: sourceColumn },
-      destination: { index: destinationIndex, droppableId: destinationColumn }
+      destination: { index: destinationIndex, droppableId: destinationColumn },
+      draggableId
     } = result
+
+    console.log(result)
 
     const destinationTasks = [...state.columns[`${destinationColumn}`].tasks]
 
@@ -49,6 +50,8 @@ const BoardContainer = ({
 
       dispatch({ type: 'dragWithinColumn', payload: { destinationColumn, destinationTasks } })
     } else {
+      await updateTask(parseInt(draggableId), destinationColumn)
+      setChangedTask(parseInt(draggableId))
       const sourceTasks = [...state.columns[`${sourceColumn}`].tasks]
 
       const [removed] = sourceTasks.splice(sourceIndex, 1)
@@ -76,9 +79,20 @@ const BoardContainer = ({
     }
   }, [columns, tasks])
 
-  useEffect(() => {
-    console.log(tasks)
-  }, [])
+  // useEffect(() => {
+  //   console.log(state.columns)
+  // }, [state.columns])
+  useEffect(async () => {
+    if (changedTask >= 0) {
+      const task = await getTask(changedTask)
+      const newTasks = [...tasks]
+      const index = newTasks.findIndex(t => t.task_id === task.task_id)
+      newTasks.splice(index, 1)
+      newTasks.splice(index, 0, task)
+      setTasks(newTasks)
+    }
+    setChangedTask(-1)
+  }, [changedTask])
 
   return (
     <StyledContainer>
@@ -92,6 +106,7 @@ const BoardContainer = ({
               title={key}
               color={value.columnColor}
               tasks={value.tasks}
+              taskOrder={value.taskOrder}
               width={(100 / columns.length - 1)}
               length={value.tasks.length}
               showProperties={showProperties}

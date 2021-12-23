@@ -11,13 +11,18 @@ const options = (method, body) => {
         method: 'GET',
         headers: { 'Content-Type':'application/json' }
       }
+    case 'PUT':
+      return {
+        method: 'PUT',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify(body)
+      }
   }
 }
 
-export const fetchData = async (path) => {
-  return fetch(`${process.env.BACKEND_URL}${path}`, options('GET'))
+export const fetchData = async (path) => 
+  fetch(`${process.env.BACKEND_URL}${path}`, options('GET'))
     .then(response => response.json())
-}
 
 export const getSelectOptions = async (callback, path, table) => {
   const data = await fetchData(path)
@@ -33,13 +38,21 @@ export const getSelectOptions = async (callback, path, table) => {
     return formattedData
 }
 
-export const postData = async (path, body) => {
+export const postData = async (path, body) =>
   fetch(`${process.env.BACKEND_URL}${path}`, options('POST', body))
     .then(response => response.json())
-}
 
-export const postTask = async (body) => {
+export const postTask = async (body) =>
   fetch(`${process.env.BACKEND_URL}/tasks`, options('POST', body))
     .then(response => response.json())
     .then(response => console.log(response))
+
+export const updateTask = async (taskId, status) => {
+  const body = { task_status: status }
+  fetch(`${process.env.BACKEND_URL}/tasks/${taskId}`, options('PUT', body))
+    .then(response => response.json())
 }
+
+export const getTask = async (taskId) =>
+  fetch(`${process.env.BACKEND_URL}/tasks/${taskId}`, options('GET'))
+    .then(response => response.json())

@@ -37,7 +37,6 @@ const TaskCardCover = ({
   showProperties
 }) => {
   const properties = showProperties.map(p => p.toLowerCase().replace(' ', '_'))
-
   return (
     <Draggable
       key={task.task_id}

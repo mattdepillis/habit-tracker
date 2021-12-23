@@ -19,6 +19,7 @@ const getQueryBase = `
   left join tag as tg on tt.tag_id = tg.tag_id
 `
 
+// gets all tasks.
 const getTasks = (req, res) => {
   knex.raw(`${getQueryBase};`)
     .then(tasks => {
@@ -78,6 +79,7 @@ const getTasks = (req, res) => {
     })
 }
 
+// gets a task by id.
 const getTask = (req, res) => {
   knex.raw(`${getQueryBase} where t.task_id=${req.params.id};`)
     .then(task => {
@@ -129,27 +131,53 @@ const getTask = (req, res) => {
     })
 }
 
-const formatTaskBody = async (body) => {
-  const statusId = await knex('status').where({ status_name: body.task_status }).then(status => status[0]?.status_id)
-  const priorityId = await knex('priority').where({ priority_name: body.task_priority }).then(id => id[0]?.priority_id)
-  const typeId = await knex('type').where({ type_name: body.task_type }).then(type => type[0]?.type_id)
-  const pmId = await knex('product_manager').where({ product_manager_name: body.task_product_manager }).then(pm => pm[0]?.product_manager_id)
+// formats changed fields for new task insertion into db, or existing task edits
+const formatTaskBody = async (fields) => {
+  const formattedTaskBody = {}
 
-  const formattedTaskBody = {
-    task_name: body.task_name,
-    task_description: body.task_description,
-    task_deadline: body.task_deadline,
-    task_status: statusId,
-    task_priority: priorityId,
-    task_type: typeId,
-    task_product_manager: pmId
-  }
+  await Promise.all(fields.map(async field => {
+    let fieldValue
+
+    switch(field[0]) {
+      case 'task_status':
+        fieldValue = await knex('status')
+          .where({ status_name: field[1] })
+          .then(status => status[0]?.status_id)
+        break
+      case 'task_priority':
+        fieldValue = await knex('priority')
+          .where({ priority_name: field[1] })
+          .then(id => id[0]?.priority_id)
+        break
+      case 'task_type':
+        fieldValue = await knex('type')
+          .where({ type_name: field[1] })
+          .then(type => type[0]?.type_id)
+        break
+      case 'task_product_manager':
+        fieldValue = await knex('product_manager')
+          .where({ product_manager_name: field[1] })
+          .then(pm => pm[0]?.product_manager_id)
+        break
+      case 'task_engineers':
+        break
+      case 'task_tags':
+        break
+      default:
+        fieldValue = field[1]
+        break
+    }
+  
+    if (fieldValue) formattedTaskBody[`${field[0]}`] = fieldValue
+  }))
 
   return formattedTaskBody
 }
 
+// posts a task and related data to respective tables.
 const postTask = async (req, res) => {
-  const formattedTaskBody = await formatTaskBody(req.body)
+  const formattedTaskBody = await formatTaskBody(Object.entries(req.body))
+  console.log(formattedTaskBody)
 
   knex('tasks')
     .insert(formattedTaskBody)
@@ -190,18 +218,22 @@ const postTask = async (req, res) => {
     })
 }
 
+// updates the task with only the changed fields and their new values.
 const updateTask = async (req, res) => {
-  const formattedTaskBody = await formatTaskBody(req.body)
+  const formattedTaskBody = await formatTaskBody(Object.entries(req.body))
+
+  console.log(formattedTaskBody)
 
   knex('tasks')
-    .where( { task_id: req.params.id })
+    .where({ task_id: req.params.id })
     .returning('task_id')
     .update(formattedTaskBody)
     .then(taskId => {
       taskId = taskId[0]
 
       // update engineer_tasks
-      knex('engineer_tasks')
+      if (req.body.task_engineers) {
+        knex('engineer_tasks')
         .where({ task_id: taskId })
         .delete()
         .then(() => {
@@ -221,9 +253,11 @@ const updateTask = async (req, res) => {
           console.log(err)
           res.json(err)
         })
+      } 
 
-      // update tasks
-      knex('tagged_tasks')
+      // update tags
+      if (req.body.task_tags) {
+        knex('tagged_tasks')
         .where({ task_id: taskId })
         .delete()
         .then(() => {
@@ -243,8 +277,10 @@ const updateTask = async (req, res) => {
           console.log(err)
           res.json(err)
         })
+      }
+      return taskId
     })
-    .then(data => res.json(data))
+    .then(taskId => res.json(taskId))
     .catch(err => {
       console.log(err)
       res.json(err)
