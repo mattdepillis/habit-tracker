@@ -1,12 +1,16 @@
-// import { getTask } from "./api"
+/**
+ * manages the high-level state of the kanban board: columns and the tasks within them.
 
-// TODO: comment here
-export const reducer = (state, action) => {
+ * @param {Object} state the current board state.
+ * @param {Object} action the action to perform on the current state.
+ * @returns {Object} the new high-level board state.
+*/
+export const boardReducer = (state, action) => {
   const { type, payload } = action
   let newColumns = {}
+
   switch (type) {
     case 'setState': {
-      console.log('state set')
       const { columns, tasks } = payload
 
       columns.forEach(column => {

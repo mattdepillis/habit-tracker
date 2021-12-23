@@ -83,6 +83,7 @@ const HomePage = () => {
         <BoardContainer
           showModal={showModal}
           showProperties={showProperties}
+          // t={tasks}
         />
       </BoardContainerWrapper>
       <AddTaskModal

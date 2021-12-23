@@ -1,23 +1,11 @@
 import React, { useState, useEffect, useReducer } from 'react'
-import styled from 'styled-components'
 import { DragDropContext } from 'react-beautiful-dnd'
 
-import { fetchData, updateTask, getTask } from '../utils/api'
-import { reducer } from '../utils/dnd'
+import { fetchData, updateTask } from '../utils/api'
+import { boardReducer } from '../utils/boardReducer'
+import { StyledContainer, ColumnContainer } from '../styles/BoardContainer'
 import Column from './Column'
 
-const StyledContainer = styled.div`
-  margin-top: 10px;
-  border-radius: 10px;
-  width: 100%;
-`
-
-const ColumnContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-`
 
 const BoardContainer = ({
   showModal,
@@ -25,22 +13,27 @@ const BoardContainer = ({
 }) => {
   const [columns, setColumns] = useState([])
   const [tasks, setTasks] = useState([])
-  const [changedTask, setChangedTask] = useState(-1)
 
   const initialState = { columns: {} }
-  const [state, dispatch] = useReducer(reducer, initialState)
+  const [state, dispatch] = useReducer(boardReducer, initialState)
 
   const setKanbanColumns = async () => setColumns(await fetchData('/column'))
   const setTaskList = async () => setTasks(await fetchData('/tasks'))
 
+  /*
+    mandatory react-beautiful-dnd callback function for DragDropContext.
+    at the end of a drag, the tasks are reordered on screen and fire a reducer action.
+    
+    * NOTE: must update ordering synchronously.
+      as a result, on a drag to a different column the function first manually updates the state of a
+      dragged task to update the UI synchronously. Then, it makes a PUT call to update in the db.
+  */
   const onDragEnd = async (result) => {
     const {
       source: { index: sourceIndex, droppableId: sourceColumn },
       destination: { index: destinationIndex, droppableId: destinationColumn },
       draggableId
     } = result
-
-    console.log(result)
 
     const destinationTasks = [...state.columns[`${destinationColumn}`].tasks]
 
@@ -49,18 +42,22 @@ const BoardContainer = ({
       destinationTasks.splice(destinationIndex, 0, removed)
 
       dispatch({ type: 'dragWithinColumn', payload: { destinationColumn, destinationTasks } })
-    } else {
-      await updateTask(parseInt(draggableId), destinationColumn)
-      setChangedTask(parseInt(draggableId))
+    } 
+    else {
       const sourceTasks = [...state.columns[`${sourceColumn}`].tasks]
 
       const [removed] = sourceTasks.splice(sourceIndex, 1)
+      removed.task_status = destinationColumn
+      removed.status_label_color = state.columns[destinationColumn].columnColor
+
       destinationTasks.splice(destinationIndex, 0, removed)
 
       dispatch({
         type: 'dragToDifferentColumn',
         payload: { sourceColumn, destinationColumn, sourceTasks, destinationTasks }
       })
+
+      await updateTask(parseInt(draggableId), destinationColumn)
     }
   }
 
@@ -78,21 +75,6 @@ const BoardContainer = ({
       dispatch({ type: 'setState', payload: { columns, tasks } })
     }
   }, [columns, tasks])
-
-  // useEffect(() => {
-  //   console.log(state.columns)
-  // }, [state.columns])
-  useEffect(async () => {
-    if (changedTask >= 0) {
-      const task = await getTask(changedTask)
-      const newTasks = [...tasks]
-      const index = newTasks.findIndex(t => t.task_id === task.task_id)
-      newTasks.splice(index, 1)
-      newTasks.splice(index, 0, task)
-      setTasks(newTasks)
-    }
-    setChangedTask(-1)
-  }, [changedTask])
 
   return (
     <StyledContainer>

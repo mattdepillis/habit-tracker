@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 import { Modal, Button, Spinner } from 'react-bootstrap'
-import { postTask } from '../utils/api'
+import { postData } from '../utils/api'
 import AddTaskForm from './AddTaskForm'
 
 const AddTaskModal = ({
@@ -48,7 +48,7 @@ const AddTaskModal = ({
           onClick={async (e) => {
             e.preventDefault()
             setSubmitting(true)
-            await postTask(formAnswers)
+            await postData('/tasks', formAnswers)
             setSubmitting(false)
             onHide()
           }}

@@ -1,3 +1,4 @@
+// a single function for setting fetch options. 
 const options = (method, body) => {
   switch (method) {
     case 'POST':
@@ -20,10 +21,12 @@ const options = (method, body) => {
   }
 }
 
+// fetches data from the db from table specified by the path.
 export const fetchData = async (path) => 
   fetch(`${process.env.BACKEND_URL}${path}`, options('GET'))
     .then(response => response.json())
 
+// gets options for select questions.
 export const getSelectOptions = async (callback, path, table) => {
   const data = await fetchData(path)
     const formattedData = []
@@ -38,21 +41,14 @@ export const getSelectOptions = async (callback, path, table) => {
     return formattedData
 }
 
+// posts an object to the db using the specified path to determine the proper table.
 export const postData = async (path, body) =>
   fetch(`${process.env.BACKEND_URL}${path}`, options('POST', body))
-    .then(response => response.json())
+    .then(response => response)
 
-export const postTask = async (body) =>
-  fetch(`${process.env.BACKEND_URL}/tasks`, options('POST', body))
-    .then(response => response.json())
-    .then(response => console.log(response))
-
+// updates a task in the db. primarily used to update task_status after onDragEnd.
 export const updateTask = async (taskId, status) => {
   const body = { task_status: status }
-  fetch(`${process.env.BACKEND_URL}/tasks/${taskId}`, options('PUT', body))
-    .then(response => response.json())
+  return fetch(`${process.env.BACKEND_URL}/tasks/${taskId}`, options('PUT', body))
+    .then(response => response)
 }
-
-export const getTask = async (taskId) =>
-  fetch(`${process.env.BACKEND_URL}/tasks/${taskId}`, options('GET'))
-    .then(response => response.json())

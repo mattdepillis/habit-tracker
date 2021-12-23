@@ -177,7 +177,6 @@ const formatTaskBody = async (fields) => {
 // posts a task and related data to respective tables.
 const postTask = async (req, res) => {
   const formattedTaskBody = await formatTaskBody(Object.entries(req.body))
-  console.log(formattedTaskBody)
 
   knex('tasks')
     .insert(formattedTaskBody)
@@ -193,9 +192,8 @@ const postTask = async (req, res) => {
                 task_id: taskId[0],
                 tag_id: tagId
               })
-              .then(data => console.log(data))
+              .then(data => data)
           })
-          .then(data => res.json(data))
       })
       req.body.task_engineers.forEach(engineer => {
         knex('engineer')
@@ -207,11 +205,12 @@ const postTask = async (req, res) => {
                 task_id: taskId[0],
                 engineer_id: engineerId
               })
-              .then(data => console.log(data))
+              .then(data => data)
           })
-          .then(data => res.json(data))
       })
+      return taskId[0]
     })
+    .then(data => res.json(data))
     .catch(err => {
       console.log(err)
       res.json(err)
@@ -221,8 +220,6 @@ const postTask = async (req, res) => {
 // updates the task with only the changed fields and their new values.
 const updateTask = async (req, res) => {
   const formattedTaskBody = await formatTaskBody(Object.entries(req.body))
-
-  console.log(formattedTaskBody)
 
   knex('tasks')
     .where({ task_id: req.params.id })
