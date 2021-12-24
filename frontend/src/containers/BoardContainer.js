@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd'
 
-import { generateTaskOrder } from '../utils/utils'
 import { fetchData, updateItem } from '../utils/api'
 import { boardReducer } from '../utils/boardReducer'
 import { StyledContainer, ColumnContainer } from '../styles/BoardContainer'
 import Column from './Column'
-
 
 const BoardContainer = ({
   showModal,
@@ -36,52 +34,60 @@ const BoardContainer = ({
       destination: { index: destinationIndex, droppableId: destinationColumn }
     } = result
 
-    /*
-      ! The problem: destinationTasks is set too quickly or incorrectly.
-      * it's already what it should be before the splice actually happens.
-    */
-    const destinationTasks = [...state.columns[`${destinationColumn}`].tasks]
-    console.log('dtasks first', destinationTasks)
-    const destinationColumnId = state.columns[`${destinationColumn}`].columnId
+    const {
+      tasks: srcTasks,
+      taskOrder: srcColumnOrder,
+      columnId: sourceColumnId,
+    } = state.columns[`${sourceColumn}`]
+
+    const sourceColumnTasks = [...srcTasks]
+    const sourceColumnOrder = [...srcColumnOrder]
+
+    const [removed] = sourceColumnOrder.splice(sourceIndex, 1)
 
     if (sourceColumn === destinationColumn) {
-      console.log('si', sourceIndex)
-      console.log('di', destinationIndex)
-      console.log('dtasks prior to splice', destinationTasks)
-      const [removed] = destinationTasks.splice(sourceIndex, 1)
+      sourceColumnOrder.splice(destinationIndex, 0, removed)
 
-      console.log('r', removed)
-      destinationTasks.splice(destinationIndex, 0, removed)
+      dispatch({
+        type: 'dragWithinColumn',
+        payload: { sourceColumn, sourceColumnOrder, sourceColumnTasks }
+      })
+    }
 
-      console.log('dt', destinationTasks)
-
-      dispatch({ type: 'dragWithinColumn', payload: { destinationColumn, destinationTasks } })
-    } 
     else {
-      const sourceTasks = [...state.columns[`${sourceColumn}`].tasks]
-      const sourceColumnId = state.columns[`${sourceColumn}`].columnId
+      const {
+        tasks: destTasks,
+        taskOrder: destColumnOrder,
+        columnId: destinationColumnId,
+        columnColor: destinationColumnColor
+      } = state.columns[`${destinationColumn}`]
 
-      const [removed] = sourceTasks.splice(sourceIndex, 1)
-      removed.task_status = destinationColumn
-      removed.status_label_color = state.columns[destinationColumn].columnColor
-      destinationTasks.splice(destinationIndex, 0, removed)
+      const destinationColumnTasks = [...destTasks]
+      const destinationColumnOrder = [...destColumnOrder]
+
+      destinationColumnOrder.splice(destinationIndex, 0, removed)
 
       dispatch({
         type: 'dragToDifferentColumn',
-        payload: { sourceColumn, destinationColumn, sourceTasks, destinationTasks }
+        payload: {
+          sourceColumn, sourceColumnOrder, sourceColumnTasks,
+          destinationColumn, destinationColumnOrder, destinationColumnTasks,
+          destinationColumnColor, removed
+        }
       })
 
+      // update the destination column order in the db.
+      const destinationColumnBody = { column_order: destinationColumnOrder }
+      await updateItem('/column', destinationColumnId, destinationColumnBody)
+
+      // update the dragged task's new task status in the db.
       const taskBody = { task_status: destinationColumn }
       await updateItem('/tasks', parseInt(draggableId), taskBody)
-      
-      const sourceColumnTaskOrder = generateTaskOrder(sourceTasks)
-      const sourceColumnBody = { column_order: sourceColumnTaskOrder }
-      await updateItem('/column', sourceColumnId, sourceColumnBody)
     }
 
-    const destinationColumnTaskOrder = generateTaskOrder(destinationTasks)
-    const destinationColumnBody = { column_order: destinationColumnTaskOrder }
-    await updateItem('/column', destinationColumnId, destinationColumnBody)
+    // update the source column order in the db.
+    const sourceColumnBody = { column_order: sourceColumnOrder }
+    await updateItem('/column', sourceColumnId, sourceColumnBody)
   }
 
   useEffect(() => {
@@ -99,33 +105,24 @@ const BoardContainer = ({
     }
   }, [columns, tasks])
 
-  useEffect(() => {
-    console.log('bo to: ', state.columns['Ready']?.taskOrder)
-  }, [state])
-
   return (
     <StyledContainer>
       <DragDropContext
         onDragEnd={onDragEnd}
       >
         <ColumnContainer>
-          {Object.entries(state.columns).map(([key, column]) => {
-            // console.log('to', state.columns[`${key}`]?.taskOrder)
-            return (
-              <Column
-                key={key}
-                title={key}
-                color={column.columnColor}
-                // tasks={value.tasks}
-                taskOrder={column.taskOrder}
-                tasks={column.tasks}
-                // taskOrder={state.columns[`${column}`]?.taskOrder}
-                width={(100 / columns.length - 1)}
-                length={column.tasks.length}
-                showProperties={showProperties}
-              />
-            )
-          })}
+          {Object.entries(state.columns).map(([key, column]) => (
+            <Column
+              key={key}
+              title={key}
+              color={column.columnColor}
+              tasks={column.tasks}
+              taskOrder={column.taskOrder}
+              width={(100 / columns.length - 1)}
+              length={column.tasks.length}
+              showProperties={showProperties}
+            />
+          ))}
         </ColumnContainer>
       </DragDropContext>
     </StyledContainer>

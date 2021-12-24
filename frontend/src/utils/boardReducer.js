@@ -30,30 +30,39 @@ export const boardReducer = (state, action) => {
     }
 
     case 'dragWithinColumn': {
-      const { destinationColumn, destinationTasks } = payload
+      const { sourceColumn, sourceColumnOrder, sourceColumnTasks } = payload
 
       newColumns = { ...state.columns }
 
-      // console.log(destinationTasks)
-
-      newColumns[`${destinationColumn}`].tasks = destinationTasks
-      newColumns[`${destinationColumn}`].taskOrder = destinationTasks.map(t => t.task_id)
+      newColumns[`${sourceColumn}`].taskOrder = sourceColumnOrder
+      newColumns[`${sourceColumn}`].tasks =
+        sourceColumnOrder.map(id => sourceColumnTasks.find(task => task.task_id === id))
 
       return { ...state, columns: newColumns }
     }
 
     case 'dragToDifferentColumn': {
-      const { sourceColumn, destinationColumn, sourceTasks, destinationTasks } = payload
+      const {
+        sourceColumn, sourceColumnOrder, sourceColumnTasks,
+        destinationColumn, destinationColumnOrder, destinationColumnTasks,
+        destinationColumnColor, removed
+      } = payload
 
-      console.log(state.columns)
+      const allTasks = [...sourceColumnTasks, ...destinationColumnTasks]
+
+      const removedTask = allTasks.find(task => task.task_id === removed)
+      removedTask.task_status = destinationColumn
+      removedTask.status_label_color = destinationColumnColor
 
       newColumns = { ...state.columns }
 
-      newColumns[`${sourceColumn}`].tasks = sourceTasks
-      newColumns[`${destinationColumn}`].tasks = destinationTasks
-
-      newColumns[`${sourceColumn}`].taskOrder = sourceTasks.map(t => t.task_id)
-      newColumns[`${destinationColumn}`].taskOrder = destinationTasks.map(t => t.task_id)
+      newColumns[`${sourceColumn}`].taskOrder = sourceColumnOrder
+      newColumns[`${sourceColumn}`].tasks =
+        sourceColumnOrder.map(id => allTasks.find(task => task.task_id === id))
+      
+      newColumns[`${destinationColumn}`].taskOrder = destinationColumnOrder
+      newColumns[`${destinationColumn}`].tasks =
+        destinationColumnOrder.map(id => allTasks.find(task => task.task_id === id))
 
       return { ...state, columns: newColumns }
     }
