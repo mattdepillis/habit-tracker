@@ -15,10 +15,12 @@ const Column = ({
   title,
   color,
   tasks,
+  taskOrder,
   width,
   length,
   showProperties
 }) => {
+  if (title === 'Ready') console.log(title, taskOrder)
   return (
     <ColumnContainer
       width={width}
@@ -33,14 +35,18 @@ const Column = ({
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
-            {tasks.map((task, i) => (
-              <TaskCardCover
-                key={i}
-                task={task}
-                i={i}
-                showProperties={showProperties}
-              />
-            ))}
+            {taskOrder.map((taskId, i) => {
+              const task = tasks.find(task => task.task_id === taskId)
+              if (title === 'Ready') console.log('t', task)
+              return (
+                <TaskCardCover
+                  key={i}
+                  task={task}
+                  i={i}
+                  showProperties={showProperties}
+                />
+              )
+            })}
             {provided.placeholder} 
           </CardContainer>
         )}

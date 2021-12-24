@@ -26,9 +26,12 @@ const postColumn = async (req, res) => {
 const updateColumn = async (req, res) => {
   knex('columns')
     .where( { column_id: req.params.id })
-    .update(req.body)
     .returning('*')
-    .then(column => res.json(column))
+    .update(req.body)
+    .then(column => {
+      console.log('c: ', column)
+      res.json(column)
+    })
     .catch(err => res.json(err))
 }
 

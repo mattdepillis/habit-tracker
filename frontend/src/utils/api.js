@@ -46,9 +46,7 @@ export const postData = async (path, body) =>
   fetch(`${process.env.BACKEND_URL}${path}`, options('POST', body))
     .then(response => response)
 
-// updates a task in the db. primarily used to update task_status after onDragEnd.
-export const updateTask = async (taskId, status) => {
-  const body = { task_status: status }
-  return fetch(`${process.env.BACKEND_URL}/tasks/${taskId}`, options('PUT', body))
+// updates an item in the db.
+export const updateItem = async (path, id, body) =>
+  fetch(`${process.env.BACKEND_URL}${path}/${id}`, options('PUT', body))
     .then(response => response)
-}

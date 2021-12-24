@@ -81,3 +81,6 @@ export const createPropertyArray = (task, property) => {
 
   return propertyArray
 }
+
+export const generateTaskOrder = (array) =>
+  array.map(item => item.task_id)

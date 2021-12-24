@@ -15,16 +15,16 @@ export const boardReducer = (state, action) => {
 
       columns.forEach(column => {
         newColumns[column.column_name] = {
+          columnId: column.column_id,
           columnColor: column.column_color,
           tasks: [],
-          taskOrder: []
+          taskOrder: column.column_order
         }
       })
 
-      tasks.forEach(task => {
+      tasks.forEach(task =>
         newColumns[task.task_status].tasks.push(task)
-        newColumns[task.task_status].taskOrder.push(task.task_id)
-      })
+      )
 
       return { ...state, columns: newColumns }
     }
@@ -33,6 +33,9 @@ export const boardReducer = (state, action) => {
       const { destinationColumn, destinationTasks } = payload
 
       newColumns = { ...state.columns }
+
+      // console.log(destinationTasks)
+
       newColumns[`${destinationColumn}`].tasks = destinationTasks
       newColumns[`${destinationColumn}`].taskOrder = destinationTasks.map(t => t.task_id)
 
@@ -42,9 +45,14 @@ export const boardReducer = (state, action) => {
     case 'dragToDifferentColumn': {
       const { sourceColumn, destinationColumn, sourceTasks, destinationTasks } = payload
 
+      console.log(state.columns)
+
       newColumns = { ...state.columns }
+
       newColumns[`${sourceColumn}`].tasks = sourceTasks
       newColumns[`${destinationColumn}`].tasks = destinationTasks
+
+      newColumns[`${sourceColumn}`].taskOrder = sourceTasks.map(t => t.task_id)
       newColumns[`${destinationColumn}`].taskOrder = destinationTasks.map(t => t.task_id)
 
       return { ...state, columns: newColumns }

@@ -50,7 +50,7 @@ const TaskCardCover = ({
           ref={provided.innerRef}
         >
           <Card.Body>
-            <CardTitle>{task.task_name}</CardTitle>
+            <CardTitle>{task.task_name} ({task.task_id})</CardTitle>
             {properties.map(property => {
               const propertyArray = createPropertyArray(task, property)
               return (

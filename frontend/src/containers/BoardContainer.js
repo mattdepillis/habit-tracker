@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd'
 
-import { fetchData, updateTask } from '../utils/api'
+import { generateTaskOrder } from '../utils/utils'
+import { fetchData, updateItem } from '../utils/api'
 import { boardReducer } from '../utils/boardReducer'
 import { StyledContainer, ColumnContainer } from '../styles/BoardContainer'
 import Column from './Column'
@@ -30,26 +31,39 @@ const BoardContainer = ({
   */
   const onDragEnd = async (result) => {
     const {
+      draggableId,
       source: { index: sourceIndex, droppableId: sourceColumn },
-      destination: { index: destinationIndex, droppableId: destinationColumn },
-      draggableId
+      destination: { index: destinationIndex, droppableId: destinationColumn }
     } = result
 
+    /*
+      ! The problem: destinationTasks is set too quickly or incorrectly.
+      * it's already what it should be before the splice actually happens.
+    */
     const destinationTasks = [...state.columns[`${destinationColumn}`].tasks]
+    console.log('dtasks first', destinationTasks)
+    const destinationColumnId = state.columns[`${destinationColumn}`].columnId
 
     if (sourceColumn === destinationColumn) {
+      console.log('si', sourceIndex)
+      console.log('di', destinationIndex)
+      console.log('dtasks prior to splice', destinationTasks)
       const [removed] = destinationTasks.splice(sourceIndex, 1)
+
+      console.log('r', removed)
       destinationTasks.splice(destinationIndex, 0, removed)
+
+      console.log('dt', destinationTasks)
 
       dispatch({ type: 'dragWithinColumn', payload: { destinationColumn, destinationTasks } })
     } 
     else {
       const sourceTasks = [...state.columns[`${sourceColumn}`].tasks]
+      const sourceColumnId = state.columns[`${sourceColumn}`].columnId
 
       const [removed] = sourceTasks.splice(sourceIndex, 1)
       removed.task_status = destinationColumn
       removed.status_label_color = state.columns[destinationColumn].columnColor
-
       destinationTasks.splice(destinationIndex, 0, removed)
 
       dispatch({
@@ -57,8 +71,17 @@ const BoardContainer = ({
         payload: { sourceColumn, destinationColumn, sourceTasks, destinationTasks }
       })
 
-      await updateTask(parseInt(draggableId), destinationColumn)
+      const taskBody = { task_status: destinationColumn }
+      await updateItem('/tasks', parseInt(draggableId), taskBody)
+      
+      const sourceColumnTaskOrder = generateTaskOrder(sourceTasks)
+      const sourceColumnBody = { column_order: sourceColumnTaskOrder }
+      await updateItem('/column', sourceColumnId, sourceColumnBody)
     }
+
+    const destinationColumnTaskOrder = generateTaskOrder(destinationTasks)
+    const destinationColumnBody = { column_order: destinationColumnTaskOrder }
+    await updateItem('/column', destinationColumnId, destinationColumnBody)
   }
 
   useEffect(() => {
@@ -76,24 +99,33 @@ const BoardContainer = ({
     }
   }, [columns, tasks])
 
+  useEffect(() => {
+    console.log('bo to: ', state.columns['Ready']?.taskOrder)
+  }, [state])
+
   return (
     <StyledContainer>
       <DragDropContext
         onDragEnd={onDragEnd}
       >
         <ColumnContainer>
-          {Object.entries(state.columns).map(([key, value]) => (
-            <Column
-              key={key}
-              title={key}
-              color={value.columnColor}
-              tasks={value.tasks}
-              taskOrder={value.taskOrder}
-              width={(100 / columns.length - 1)}
-              length={value.tasks.length}
-              showProperties={showProperties}
-            />
-          ))}
+          {Object.entries(state.columns).map(([key, column]) => {
+            // console.log('to', state.columns[`${key}`]?.taskOrder)
+            return (
+              <Column
+                key={key}
+                title={key}
+                color={column.columnColor}
+                // tasks={value.tasks}
+                taskOrder={column.taskOrder}
+                tasks={column.tasks}
+                // taskOrder={state.columns[`${column}`]?.taskOrder}
+                width={(100 / columns.length - 1)}
+                length={column.tasks.length}
+                showProperties={showProperties}
+              />
+            )
+          })}
         </ColumnContainer>
       </DragDropContext>
     </StyledContainer>
