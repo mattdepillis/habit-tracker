@@ -22,13 +22,9 @@ export const boardReducer = (state, action) => {
         }
       })
 
-      console.log('t', tasks)
-
       tasks.forEach(task =>
         newColumns[task.task_status].tasks.push(task)
       )
-
-      console.log('nc', newColumns)
 
       return { ...state, columns: newColumns }
     }

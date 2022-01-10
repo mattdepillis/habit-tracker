@@ -50,3 +50,8 @@ export const postData = async (path, body) =>
 export const updateItem = async (path, id, body) =>
   fetch(`${process.env.BACKEND_URL}${path}/${id}`, options('PUT', body))
     .then(response => response)
+
+// deletes the task in the db.
+// TODO: should take a path and id -- API route has already been written for this function
+export const deleteTask = async () =>
+  console.log('this will delete the task in the future!')

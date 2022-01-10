@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd'
+import { Spinner } from 'react-bootstrap'
 
 import { fetchData, updateItem } from '../utils/api'
 import { boardReducer } from '../utils/boardReducer'
@@ -12,12 +13,17 @@ const BoardContainer = ({
 }) => {
   const [columns, setColumns] = useState([])
   const [tasks, setTasks] = useState([])
+  const [loading, setLoading] = useState(false)
 
   const initialState = { columns: {} }
   const [state, dispatch] = useReducer(boardReducer, initialState)
 
-  const setKanbanColumns = async () => setColumns(await fetchData('/column'))
-  const setTaskList = async () => setTasks(await fetchData('/tasks'))
+  const loadData = async () => {
+    setLoading(true)
+    setColumns(await fetchData('/column'))
+    setTasks(await fetchData('/tasks'))
+    setLoading(false)
+  }
 
   /*
     mandatory react-beautiful-dnd callback function for DragDropContext.
@@ -91,41 +97,42 @@ const BoardContainer = ({
   }
 
   useEffect(() => {
-    setKanbanColumns()
-    setTaskList()
-  }, [])
-
-  useEffect(() => {
-    if (!showModal) setTaskList()
+    if (!showModal) loadData()
   }, [showModal])
 
   useEffect(() => {
     if (columns.length > 0 && tasks.length > 0) {
-      console.log('tasks', tasks)
       dispatch({ type: 'setState', payload: { columns, tasks } })
     }
   }, [columns, tasks])
 
   return (
     <StyledContainer>
-      <DragDropContext
-        onDragEnd={onDragEnd}
-      >
-        <ColumnContainer>
-          {Object.entries(state.columns).map(([key, column]) => (
-            <Column
-              key={key}
-              title={key}
-              color={column.columnColor}
-              tasks={column.tasks}
-              taskOrder={column.taskOrder}
-              width={(100 / columns.length - 1)}
-              length={column.tasks.length}
-              showProperties={showProperties}
-            />
-          ))}
-        </ColumnContainer>
-      </DragDropContext>
+      {loading ?
+        <Spinner
+          animation="border"
+          variant="light" 
+        />
+        :
+        <DragDropContext
+          onDragEnd={onDragEnd}
+        >
+          <ColumnContainer>
+            {Object.entries(state.columns).map(([key, column]) => (
+              <Column
+                key={key}
+                title={key}
+                color={column.columnColor}
+                tasks={column.tasks}
+                taskOrder={column.taskOrder}
+                width={(100 / columns.length - 1)}
+                length={column.tasks.length}
+                showProperties={showProperties}
+              />
+            ))}
+          </ColumnContainer>
+        </DragDropContext>
+      }
     </StyledContainer>
   )
 }

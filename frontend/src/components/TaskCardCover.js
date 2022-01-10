@@ -42,8 +42,8 @@ const TaskCardCover = ({
   const properties = showProperties.map(p => p.toLowerCase().replace(' ', '_'))
   return (
     <Draggable
-      key={task?.task_id || i}
-      draggableId={task?.task_id.toString()}
+      key={task.task_id || i}
+      draggableId={task.task_id.toString()}
       index={i}
     >
       {(provided) => (
@@ -55,7 +55,10 @@ const TaskCardCover = ({
           <Card.Body>
             <CardTitle>
               {task.task_name}
-              <DeleteTaskModal />
+              <DeleteTaskModal
+                taskName={task.task_name}
+                taskStatus={task.task_status}
+              />
             </CardTitle>
             {properties.map(property => {
               const propertyArray = createPropertyArray(task, property)
