@@ -12,6 +12,7 @@ import {
 const HomePage = () => {
   const [showModal, setShowModal] = useState(false)
   const [showToast, setShowToast] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [showProperties, setShowProperties] = useState(['Status', 'Tags'])
 
   const setModalDisplay = () => setShowModal(!showModal)
@@ -42,12 +43,15 @@ const HomePage = () => {
           </ToastWrapper>
         </MenuWrapper>
         <BoardContainer
-          showModal={showModal}
           showProperties={showProperties}
+          loading={loading}
+          setLoading={setLoading}
         />
       </BoardContainerWrapper>
       <AddTaskModal
         show={showModal}
+        loading={loading}
+        setLoading={setLoading}
         onHide={setModalDisplay}
       />
     </PageContent>

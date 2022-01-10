@@ -6,7 +6,8 @@ import AddTaskForm from '../AddTaskForm'
 
 const AddTaskModal = ({
   show,
-  onHide 
+  setLoading,
+  onHide
 }) => {
   const [formComplete, setFormComplete] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -50,6 +51,7 @@ const AddTaskModal = ({
             setSubmitting(true)
             await postData('/tasks', formAnswers)
             setSubmitting(false)
+            setLoading(true)
             onHide()
           }}
         >

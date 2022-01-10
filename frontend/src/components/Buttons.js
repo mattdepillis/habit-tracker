@@ -1,4 +1,5 @@
 import React from 'react'
+import { Spinner } from 'react-bootstrap'
 import { StyledButton, UnstyledButton } from '../styles/Buttons'
 
 export const AddButton = ({ onClick }) => 
@@ -7,6 +8,30 @@ export const AddButton = ({ onClick }) =>
     onClick={onClick}
   >
     Add Task
+  </StyledButton>
+
+export const DeleteButton = ({ onClick }) =>
+  <StyledButton
+    variant="danger"
+    onModal
+    onClick={onClick}
+  >
+    Delete
+  </StyledButton>
+
+export const CancelButton = ({ submitting, onClick }) =>
+  <StyledButton
+    variant="secondary"
+    onModal
+    onClick={onClick}
+  >
+    {submitting
+      ? <Spinner
+          animation="border"
+          variant="light" 
+        />
+      : 'Submit'
+    }
   </StyledButton>
 
 export const PropertiesButton = ({ onClick }) =>

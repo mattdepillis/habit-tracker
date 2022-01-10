@@ -17,7 +17,8 @@ const Column = ({
   taskOrder,
   width,
   length,
-  showProperties
+  showProperties,
+  setLoading
 }) => (
   <ColumnContainer
     width={width}
@@ -40,6 +41,7 @@ const Column = ({
                 task={task}
                 i={i}
                 showProperties={showProperties}
+                setLoading={setLoading}
               />
             )
           })}

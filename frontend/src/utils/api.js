@@ -18,6 +18,11 @@ const options = (method, body) => {
         headers: { 'Content-Type':'application/json' },
         body: JSON.stringify(body)
       }
+    case 'DELETE':
+      return {
+        method: 'DELETE',
+        headers: { 'Content-Type':'application/json' }
+      }
   }
 }
 
@@ -52,6 +57,6 @@ export const updateItem = async (path, id, body) =>
     .then(response => response)
 
 // deletes the task in the db.
-// TODO: should take a path and id -- API route has already been written for this function
-export const deleteTask = async () =>
-  console.log('this will delete the task in the future!')
+export const deleteTask = async (id) =>
+  fetch(`${process.env.BACKEND_URL}/tasks/${id}`, options('DELETE'))
+    .then(response => response)

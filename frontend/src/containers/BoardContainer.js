@@ -8,18 +8,17 @@ import { StyledContainer, ColumnContainer } from '../styles/BoardContainer'
 import Column from './Column'
 
 const BoardContainer = ({
-  showModal,
-  showProperties
+  showProperties,
+  loading,
+  setLoading
 }) => {
   const [columns, setColumns] = useState([])
   const [tasks, setTasks] = useState([])
-  const [loading, setLoading] = useState(false)
 
   const initialState = { columns: {} }
   const [state, dispatch] = useReducer(boardReducer, initialState)
 
   const loadData = async () => {
-    setLoading(true)
     setColumns(await fetchData('/column'))
     setTasks(await fetchData('/tasks'))
     setLoading(false)
@@ -97,8 +96,8 @@ const BoardContainer = ({
   }
 
   useEffect(() => {
-    if (!showModal) loadData()
-  }, [showModal])
+    if (loading) loadData()
+  }, [loading])
 
   useEffect(() => {
     if (columns.length > 0 && tasks.length > 0) {
@@ -128,6 +127,7 @@ const BoardContainer = ({
                 width={(100 / columns.length - 1)}
                 length={column.tasks.length}
                 showProperties={showProperties}
+                setLoading={setLoading}
               />
             ))}
           </ColumnContainer>
