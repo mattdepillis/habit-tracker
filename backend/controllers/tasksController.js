@@ -180,8 +180,10 @@ const postTask = async (req, res) => {
 
   knex('tasks')
     .insert(formattedTaskBody)
-    .returning('task_id')
-    .then(taskId => {
+    .returning(['task_id', 'task_status'])
+    .then(props => {
+      const { task_id, task_status } = props[0]
+
       req.body.task_tags.forEach(tag => {
         knex('tag')
           .where({ tag_name: tag })
@@ -189,7 +191,7 @@ const postTask = async (req, res) => {
           .then(tagId => {
             knex('tagged_tasks')
               .insert({
-                task_id: taskId[0],
+                task_id: task_id,
                 tag_id: tagId
               })
               .then(data => data)
@@ -202,15 +204,35 @@ const postTask = async (req, res) => {
           .then(engineerId => {
             knex('engineer_tasks')
               .insert({
-                task_id: taskId[0],
+                task_id: task_id,
                 engineer_id: engineerId
               })
               .then(data => data)
           })
       })
-      return taskId[0]
+
+      // add the taskId to the task order of the corresponding column
+      knex('status')
+        .where({ status_id: task_status })
+        .then(status => {
+          const { status_name } = status[0]
+
+          knex('columns')
+            .where({ column_name: status_name })
+            .then(column => {
+              const order = [...column[0].column_order, task_id]
+
+              knex('columns')
+                .where({ column_name: status_name })
+                .update({ column_order: order })
+                .then(data => data)
+                .catch(err => console.log(err))
+        })
+      })
+      
+      return task_id
     })
-    .then(data => res.json(data))
+    .then(taskId => res.json(taskId))
     .catch(err => {
       console.log(err)
       res.json(err)
@@ -284,12 +306,31 @@ const updateTask = async (req, res) => {
     })
 }
 
-// since foreign keys on junction tables are CASCADE deletes, only have to delete the task
+/*
+  deletes the task. first, deletes the task, which will remove task references in junction tables with CASCADE delete.
+  then, finds the column the task is in, and removes the taskId from that column's column_order.
+*/
 const deleteTask = async (req, res) => {
   knex('tasks')
-    .where( { task_id: req.params.id })
+    .where({ task_id: req.params.id })
     .delete()
-    .then(task => res.json(task))
+    .then(taskId => {
+      const taskIdAsInt = parseInt(req.params.id)
+      knex('columns')
+        .then(columns => {
+          const column = columns.find(column => column.column_order.includes(taskIdAsInt))
+          const { column_id, column_order } = column
+          const index = column_order.indexOf(taskIdAsInt)
+          column_order.splice(index, 1)
+          knex('columns')
+            .where({ column_id: column_id })
+            .update({ column_order: column_order })
+            .then(data => data)
+            .catch(err => res.json(err))
+        })
+      return taskId
+    })
+    .then(taskId => res.json(taskId))
     .catch(err => res.json(err))
 }
 

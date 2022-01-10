@@ -1,12 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
+
 import { Card, Badge } from 'react-bootstrap'
 import { Draggable } from 'react-beautiful-dnd'
-
 import { createPropertyArray } from '../utils/utils'
+import DeleteTaskModal from './modals/DeleteTaskModal'
 
 const StyledBadge = styled(Badge)`
-  background-color: ${props => props.backgroundColor || 'dodgerblue'};
+  background-color: ${props => props.backgroundColor || '#36454f'};
   color: white;
   font-size: .85em;
   font-weight: normal;
@@ -16,6 +17,8 @@ const StyledBadge = styled(Badge)`
 
 const CardTitle = styled(Card.Title)`
   font-size: 1em;
+  display: flex;
+  justify-content: space-between;
 `
 
 const renderBadges = (array) => (
@@ -39,8 +42,8 @@ const TaskCardCover = ({
   const properties = showProperties.map(p => p.toLowerCase().replace(' ', '_'))
   return (
     <Draggable
-      key={task.task_id}
-      draggableId={task.task_id.toString()}
+      key={task?.task_id || i}
+      draggableId={task?.task_id.toString()}
       index={i}
     >
       {(provided) => (
@@ -50,7 +53,10 @@ const TaskCardCover = ({
           ref={provided.innerRef}
         >
           <Card.Body>
-            <CardTitle>{task.task_name} ({task.task_id})</CardTitle>
+            <CardTitle>
+              {task.task_name}
+              <DeleteTaskModal />
+            </CardTitle>
             {properties.map(property => {
               const propertyArray = createPropertyArray(task, property)
               return (

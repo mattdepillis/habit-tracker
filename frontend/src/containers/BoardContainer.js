@@ -101,6 +101,7 @@ const BoardContainer = ({
 
   useEffect(() => {
     if (columns.length > 0 && tasks.length > 0) {
+      console.log('tasks', tasks)
       dispatch({ type: 'setState', payload: { columns, tasks } })
     }
   }, [columns, tasks])

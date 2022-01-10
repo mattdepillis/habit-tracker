@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-
 import { Modal, Button, Spinner } from 'react-bootstrap'
-import { postData } from '../utils/api'
-import AddTaskForm from './AddTaskForm'
+
+import { postData } from '../../utils/api'
+import AddTaskForm from '../AddTaskForm'
 
 const AddTaskModal = ({
   show,
