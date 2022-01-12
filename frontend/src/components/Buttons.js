@@ -10,18 +10,9 @@ export const AddButton = ({ onClick }) =>
     Add Task
   </StyledButton>
 
-export const DeleteButton = ({ onClick }) =>
+export const DeleteButton = ({ submitting, onClick }) =>
   <StyledButton
     variant="danger"
-    onModal
-    onClick={onClick}
-  >
-    Delete
-  </StyledButton>
-
-export const CancelButton = ({ submitting, onClick }) =>
-  <StyledButton
-    variant="secondary"
     onModal
     onClick={onClick}
   >
@@ -30,8 +21,17 @@ export const CancelButton = ({ submitting, onClick }) =>
           animation="border"
           variant="light" 
         />
-      : 'Submit'
+      : 'Delete'
     }
+  </StyledButton>
+
+export const CancelButton = ({ onClick }) =>
+  <StyledButton
+    variant="secondary"
+    onModal
+    onClick={onClick}
+  >
+    Cancel
   </StyledButton>
 
 export const PropertiesButton = ({ onClick }) =>

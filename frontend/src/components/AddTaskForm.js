@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Col } from 'react-bootstrap'
+import { Form, Col, Row } from 'react-bootstrap'
 
 import { renderQuestion } from './FormQuestions/QuestionFormats'
-import FormQuestions from './FormQuestions/FormQuestions'
+import { formSections } from './FormQuestions/FormQuestions'
 import { cleanFormAnswers } from '../utils/utils'
 
-const questionFormat = ({ id, label, type, path, table }, setAnswer) => {
+const formatSectionQuestions = (section, questions, setAnswer) => {
+  if (questions.length > 2) console.log('too long', section)
   return (
-  <Form.Group as={Col}>
-    <Form.Label>{label}</Form.Label>
-    {renderQuestion(id, type, path, table, setAnswer)}
-  </Form.Group>
-)}
+    <Row>
+      {questions.map(({ id, label, type, path, table }) => (
+        <Form.Group key={id} as={Col}>
+          <Form.Label>{label}</Form.Label>
+          {renderQuestion(id, type, path, table, setAnswer)}
+        </Form.Group>
+      ))}
+    </Row>
+  )
+}
 
 const AddTaskForm = ({
   setModalFormState
@@ -21,8 +27,7 @@ const AddTaskForm = ({
 
   useEffect(() => {
     if (Object.keys(answer).length > 0) {
-      let obj = { ...formAnswers }
-      obj = cleanFormAnswers(answer, obj)
+      const obj = cleanFormAnswers(answer, { ...formAnswers })
       setFormAnswers({ ...obj })
     }
   }, [answer])
@@ -33,8 +38,8 @@ const AddTaskForm = ({
 
   return (
     <Form>
-      {FormQuestions.map((question) => (
-        questionFormat(question, setAnswer)
+      {Array.from(formSections).map(([sectionName, questions]) => (
+          formatSectionQuestions(sectionName, questions, setAnswer)
       ))}
     </Form>
   )

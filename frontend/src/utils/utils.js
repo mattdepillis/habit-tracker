@@ -81,3 +81,7 @@ export const createPropertyArray = (task, property) => {
 
   return propertyArray
 }
+
+// finds the questions that belong to a given form section
+export const findSectionQuestions = (questions, sectionName) =>
+  Object.values(questions).filter(q => q.section === sectionName)

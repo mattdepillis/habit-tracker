@@ -1,61 +1,75 @@
-const FormQuestions = [
-  {
+import { FORM_SECTIONS } from "../../utils/constants"
+import { findSectionQuestions } from "../../utils/utils"
+
+export const questions = {
+  taskName: {
     id: 'task_name',
     label: 'Name',
-    type: 'text'
+    type: 'text',
+    section: 'nameAndDeadline'
   },
-  {
-    id: 'task_description',
-    label: 'Description',
-    type: 'textarea'
-  },
-  {
+  taskDeadline: {
     id: 'task_deadline',
     label: 'Deadline',
-    type: 'date'
+    type: 'date',
+    section: 'nameAndDeadline'
   },
-  {
+  taskStatus: {
     id: 'task_status',
     label: 'Status',
     type: 'singleSelect',
     path: '/status',
-    table: 'status'
+    table: 'status',
+    section: 'singleSelect'
   },
-  {
+  taskPriority: {
     id: 'task_priority',
     label: 'Priority',
     type: 'singleSelect',
     path: '/priority',
-    table: 'priority'
+    table: 'priority',
+    section: 'singleSelect'
   },
-  {
+  taskType: {
     id: 'task_type',
     label: 'Type',
     type: 'singleSelect',
     path: '/type',
-    table: 'type'
+    table: 'type',
+    section: 'singleSelect'
   },
-  {
-    id: 'task_tags',
-    label: 'Tags',
-    type: 'multiSelect',
-    path: '/tag',
-    table: 'tag'
-  },
-  {
-    id: 'task_engineers',
-    label: 'Engineers',
-    type: 'multiSelect',
-    path: '/engineer',
-    table: 'engineer'
-  },
-  {
+  taskProductManager: {
     id: 'task_product_manager',
     label: 'Product Manager',
     type: 'singleSelect',
     path: '/product-manager',
-    table: 'product_manager'
+    table: 'product_manager',
+    section: 'singleSelect'
   },
-]
+  taskEngineers: {
+    id: 'task_engineers',
+    label: 'Engineers',
+    type: 'multiSelect',
+    path: '/engineer',
+    table: 'engineer',
+    section: 'engineers'
+  },
+  taskTags: {
+    id: 'task_tags',
+    label: 'Tags',
+    type: 'multiSelect',
+    path: '/tag',
+    table: 'tag',
+    section: 'tags'
+  },
+  taskDescription: {
+    id: 'task_description',
+    label: 'Description',
+    type: 'textarea',
+    section: 'description'
+  }
+}
 
-export default FormQuestions
+export const formSections = new Map(FORM_SECTIONS.map(section => {
+  return ([ section, findSectionQuestions(questions, section) ])
+}))
