@@ -29,7 +29,7 @@ const AddTaskModal = ({
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          Add a Task
+          Add Task
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

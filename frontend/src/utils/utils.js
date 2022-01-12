@@ -82,6 +82,9 @@ export const createPropertyArray = (task, property) => {
   return propertyArray
 }
 
-// finds the questions that belong to a given form section
-export const findSectionQuestions = (questions, sectionName) =>
-  Object.values(questions).filter(q => q.section === sectionName)
+// splits a flat parent array into smaller child arrays of fixed length
+export const splitFlatArrayIntoChildren = (array, size) => {
+  const parentArray = []
+  while (array.length > 0) parentArray.push(array.splice(0, size))
+  return parentArray
+}

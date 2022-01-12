@@ -4,7 +4,7 @@ import { AddButton, PropertiesButton } from '../components/Buttons'
 import PageContent from '../containers/PageContent'
 import BoardContainer from '../containers/BoardContainer'
 import AddTaskModal from '../components/modals/AddTaskModal'
-import { questions } from '../components/FormQuestions/FormQuestions'
+import FormQuestions from '../components/FormQuestions/FormQuestions'
 import {
   MenuWrapper, ButtonWrapper, ToastWrapper, BoardContainerWrapper, PropertyToast
 } from '../styles/HomePage'
@@ -18,7 +18,9 @@ const HomePage = () => {
   const setModalDisplay = () => setShowModal(!showModal)
   const setToastDisplay = () => setShowToast(!showToast)
 
-  const properties = Object.values(questions).map(q => { return { id: q.id, label: q.label } })
+  const properties = Object.values(FormQuestions).map(q => {
+    return { id: q.id, label: q.label }
+  })
 
   return (
     <PageContent>

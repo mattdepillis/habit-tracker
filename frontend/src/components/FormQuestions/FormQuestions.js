@@ -1,7 +1,4 @@
-import { FORM_SECTIONS } from "../../utils/constants"
-import { findSectionQuestions } from "../../utils/utils"
-
-export const questions = {
+const FormQuestions = {
   taskName: {
     id: 'task_name',
     label: 'Name',
@@ -70,6 +67,4 @@ export const questions = {
   }
 }
 
-export const formSections = new Map(FORM_SECTIONS.map(section => {
-  return ([ section, findSectionQuestions(questions, section) ])
-}))
+export default FormQuestions
