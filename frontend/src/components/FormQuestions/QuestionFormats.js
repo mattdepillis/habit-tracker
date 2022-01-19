@@ -1,15 +1,9 @@
-/* eslint-disable react/no-children-prop */
 import React, { useState } from 'react'
 import { Form, Tabs, Tab } from 'react-bootstrap'
-import ReactMarkdown from 'react-markdown'
-
-import rehypeRaw from 'rehype-raw'
-import styled from 'styled-components'
-import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 import SelectQuestion from './SelectQuestion'
 import MultiSelectQuestion from './MultiSelectQuestion'
+import MarkdownBox from '../MarkdownBox'
 import { handleChange } from '../../utils/utils'
 
 const textQ = (id, setState) => (
@@ -20,18 +14,11 @@ const textQ = (id, setState) => (
   />
 )
 
-const MarkdownBox = styled.div`
-  background-color: #fcfbf8;
-  border-radius: 5px;
-  margin: 5px 0 0 0;
-  padding: 10px;
-  white-space: pre-wrap;
-`
-
 const textareaQ = (id, setState) => {
   const [activeKey, setActiveKey] = useState('write')
   const [value, setValue] = useState(``)
 
+  // TODO: componentize <Tabs> as well.
   return (
     <Tabs
       activeKey={activeKey}
@@ -55,30 +42,9 @@ const textareaQ = (id, setState) => {
         eventKey='preview'
         title='Markdown Preview'
       >
-        <MarkdownBox>
-          <ReactMarkdown
-            children={value || '**Write some markdown to test me out!**'}
-            rehypePlugins={[[rehypeRaw]]}
-            components={{
-              code({inline, className, children, ...props}) {
-                const match = /language-(\w+)/.exec(className || '')
-                return !inline && match ? (
-                  <SyntaxHighlighter
-                    children={String(children).replace(/\n$/, '')}
-                    style={vscDarkPlus}
-                    language={match[1]}
-                    PreTag="div"
-                    {...props}
-                  />
-                ) : (
-                  <code className={className} {...props}>
-                    {children}
-                  </code>
-                )
-              }
-            }}
-          />
-        </MarkdownBox>
+        <MarkdownBox
+          value={value}
+        />
       </Tab>
     </Tabs>
   )
