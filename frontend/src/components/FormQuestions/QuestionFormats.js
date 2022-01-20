@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form, Tabs, Tab } from 'react-bootstrap'
 
 import SelectQuestion from './SelectQuestion'
 import MultiSelectQuestion from './MultiSelectQuestion'
-import MarkdownBox from '../MarkdownBox'
+import MarkdownBox from '../markdown/MarkdownBox'
 import { handleChange } from '../../utils/utils'
 
 const textQ = (id, setState) => (
@@ -18,7 +18,6 @@ const textareaQ = (id, setState) => {
   const [activeKey, setActiveKey] = useState('write')
   const [value, setValue] = useState(``)
 
-  // TODO: componentize <Tabs> as well.
   return (
     <Tabs
       activeKey={activeKey}
