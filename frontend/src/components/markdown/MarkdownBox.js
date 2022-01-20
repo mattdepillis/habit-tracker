@@ -1,16 +1,9 @@
 /* eslint-disable react/no-children-prop */
 import React from 'react'
-import styled from 'styled-components'
 import ReactMarkdown from 'react-markdown'
 
 import CodeBlock from './CodeBlock'
-
-const MarkdownWrapper = styled.div`
-  background-color: #fcfbf8;
-  border-radius: 5px;
-  margin: 5px 0 0 0;
-  padding: 5px;
-`
+import { MarkdownWrapper } from '../../styles/MarkdownBox'
 
 const MarkdownBox = ({ value }) => (
   <MarkdownWrapper>
