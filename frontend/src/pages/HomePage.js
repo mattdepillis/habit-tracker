@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { AddButton, PropertiesButton } from '../components/Buttons'
 import PageContent from '../containers/PageContent'
@@ -13,14 +13,20 @@ const HomePage = () => {
   const [showModal, setShowModal] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [showProperties, setShowProperties] = useState(['Status', 'Tags'])
+
+  const initialProperties = JSON.parse(sessionStorage.getItem('showProperties')) || ['Status', 'Tags']
+  const [showProperties, setShowProperties] = useState(initialProperties)
 
   const setModalDisplay = () => setShowModal(!showModal)
   const setToastDisplay = () => setShowToast(!showToast)
 
-  const properties = Object.values(FormQuestions).map(q => {
+  const allTaskProperties = Object.values(FormQuestions).map(q => {
     return { id: q.id, label: q.label }
   })
+
+  useEffect(() => {
+    sessionStorage.setItem('showProperties', JSON.stringify(showProperties))
+  }, [showProperties])
 
   return (
     <PageContent>
@@ -38,7 +44,7 @@ const HomePage = () => {
             <PropertyToast
               show={showToast}
               onHide={setToastDisplay}
-              properties={properties}
+              properties={allTaskProperties}
               showProperties={showProperties}
               setShowProperties={setShowProperties}
             />
