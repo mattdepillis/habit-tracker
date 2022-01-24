@@ -18,7 +18,8 @@ const Column = ({
   width,
   length,
   showProperties,
-  setLoading
+  setLoading,
+  setTaskIdToDisplay
 }) => (
   <ColumnContainer
     width={width}
@@ -42,6 +43,7 @@ const Column = ({
                 i={i}
                 showProperties={showProperties}
                 setLoading={setLoading}
+                setTaskIdToDisplay={setTaskIdToDisplay}
               />
             )
           })}

@@ -1,115 +1,55 @@
-import React, { Fragment } from 'react'
-import styled from 'styled-components'
-import { Card, Badge } from 'react-bootstrap'
-import { Draggable } from 'react-beautiful-dnd'
+import React, { useState } from 'react'
+// import styled from 'styled-components'
+import { Modal } from 'react-bootstrap'
 
-const ItemText = styled(Card.Text)`
-  display: inline-block;
-  margin: 1px;
-  font-size: .8em;
-`
+import { renderBadges } from '../utils/render'
+import TaskModal from './modals/TaskModal'
 
-const StyledBadge = styled(Badge)`
-  background-color: ${props => props.backgroundColor};
-  color: white;
-  font-size: .85em;
-  margin: 1px;
-  display: inline-block;
-`
+// const ItemText = styled(Card.Text)`
+//   display: inline-block;
+//   margin: 1px;
+//   font-size: .8em;
+// `
 
-const StyledIcon = styled.i`
-  font-size: 1.4em;
-  margin: 1px;
-  display: inline-block;
-  vertical-align: middle;
-`
+// const renderIcon = (name) => <ItemText>{name}</ItemText>
 
-const renderStyledIcon = classname =>
-  <StyledIcon className={classname}></StyledIcon>
+/*
+  TODO: view state and edit state
+*/
+// * where to store functions like renderBadges
+const TaskCard = ({
+  show,
+  onHide,
+  task
+}) => {
+  const [edit, setEdit] = useState(false)
 
-const renderIcon = (name) => {
-  switch (name) {
-    case 'status':
-      return renderStyledIcon('bi-ui-checks')
-    case 'type':
-      return renderStyledIcon('bi-file-earmark-arrow-up-fill')
-    case 'priority':
-      return renderStyledIcon('bi-exclamation-triangle-fill')
-    case 'product manager':
-      return renderStyledIcon('bi-diagram-2')
-    case 'tag':
-      return renderStyledIcon('bi-tag')
-    case 'engineer':
-      return renderStyledIcon('bi-terminal-fill')
-    default:
-      return <ItemText>{name}</ItemText>
-  }
-}
-
-const renderBadges = (array, name, task) => {
-  const isString = task !== undefined
-
-  return (
-    <Fragment>
-      <div>
-        {!isString &&
-          renderIcon(name)
-        }
-
-        {array.map((item, StyledIcon) => (
-          <Fragment key={StyledIcon}>
-            {isString
-              ? (<Fragment>
-                  {renderIcon(item.replace('_', ' '))}
-                  <StyledBadge
-                    backgroundColor={task[`${item}_label_color`]}
-                  >
-                    {task[`task_${item}`]}
-                  </StyledBadge>
-                  <br />
-                </Fragment>)
-              : (<StyledBadge
-                  backgroundColor={item[`${name}_label_color`]}
-                >
-                  {item[`${name}_name`]}
-                </StyledBadge>)
-            }
-          </Fragment>
-        ))}
-        {!isString && <br />}
-      </div>
-    </Fragment>
+  console.log('t', task)
+  
+  return edit ? (
+    <TaskModal />
+  ) : (
+    <Modal
+      show={show}
+      onHide={onHide}
+      backdrop="static"
+      keyboard={false}
+      size="lg"
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>
+          Add Task
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>this is the modal for task {task && task.task_id}</p>
+      </Modal.Body>
+      <Modal.Footer>
+        hello world
+      </Modal.Footer>
+    </Modal>
   )
 }
-
-const TaskCard = ({
-  task,
-  i
-}) => (
-  <Draggable
-    key={task.task_id}
-    draggableId={task.task_id.toString()}
-    index={i}
-  >
-    {(provided) => (
-      <Card
-        style={{ width: '18rem' }}
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
-        ref={provided.innerRef}
-      >
-        <Card.Body>
-          <Card.Title>{task.task_name}</Card.Title>
-          {renderBadges(['status', 'type', 'priority', 'product_manager'], undefined, task)}
-          {renderBadges(task.task_tags, 'tag', undefined)}
-          {renderBadges(task.task_engineers, 'engineer', undefined)}
-          <Card.Text>
-            {task.task_description}
-          </Card.Text>
-        </Card.Body>
-      </Card>
-    )}
-  </Draggable>
-)
 
 export default TaskCard

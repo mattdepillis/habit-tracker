@@ -27,7 +27,7 @@ const formatSectionQuestions = (questions, setAnswer) => {
   )
 }
 
-const AddTaskForm = ({
+const TaskForm = ({
   setModalFormState
 }) => {
   const [answer, setAnswer] = useState({})
@@ -57,4 +57,4 @@ const AddTaskForm = ({
   )
 }
 
-export default AddTaskForm
+export default TaskForm

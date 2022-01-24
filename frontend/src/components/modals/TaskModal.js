@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { Modal, Button, Spinner } from 'react-bootstrap'
 
 import { postData } from '../../utils/api'
-import AddTaskForm from '../AddTaskForm'
+import TaskForm from '../TaskForm'
 
-const AddTaskModal = ({
+const TaskModal = ({
   show,
   setLoading,
   onHide
@@ -33,7 +33,7 @@ const AddTaskModal = ({
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <AddTaskForm setModalFormState={setFormAnswers} />
+        <TaskForm setModalFormState={setFormAnswers} />
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -60,7 +60,7 @@ const AddTaskModal = ({
                 animation="border"
                 variant="light" 
               />
-            : 'Submit'
+            : 'Create'
           }
         </Button>
       </Modal.Footer>
@@ -68,4 +68,4 @@ const AddTaskModal = ({
   )
 }
 
-export default AddTaskModal
+export default TaskModal

@@ -3,29 +3,19 @@ import { Card } from 'react-bootstrap'
 import { Draggable } from 'react-beautiful-dnd'
 
 import { createPropertyArray } from '../utils/utils'
-import { StyledBadge, CardTitle } from '../styles/TaskCardCover'
+import { renderBadges } from '../utils/render'
+import { CardTitle } from '../styles/TaskCardCover'
 import DeleteTaskModal from './modals/DeleteTaskModal'
-
-const renderBadges = (array) => (
-  <div>
-    {array.map((item, i) => (
-      <StyledBadge
-        key={i} 
-        backgroundColor={item.color}
-      >
-        {item.name}
-      </StyledBadge>
-    ))}
-  </div>
-)
 
 const TaskCardCover = ({
   task,
   i,
   showProperties,
-  setLoading
+  setLoading,
+  setTaskIdToDisplay
 }) => {
   const properties = showProperties.map(p => p.toLowerCase().replace(' ', '_'))
+
   return (
     <Draggable
       key={task.task_id || i}
@@ -37,6 +27,7 @@ const TaskCardCover = ({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
+          onClick={() => setTaskIdToDisplay(task.task_id)}
         >
           <Card.Body>
             <CardTitle>

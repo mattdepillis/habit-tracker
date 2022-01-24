@@ -10,10 +10,13 @@ import Column from './Column'
 const BoardContainer = ({
   showProperties,
   loading,
-  setLoading
+  setLoading,
+  setShowTask,
+  setTaskToDisplay
 }) => {
   const [columns, setColumns] = useState([])
   const [tasks, setTasks] = useState([])
+  const [taskIdToDisplay, setTaskIdToDisplay] = useState('')
 
   const initialState = { columns: {} }
   const [state, dispatch] = useReducer(boardReducer, initialState)
@@ -21,7 +24,7 @@ const BoardContainer = ({
   const loadData = async () => {
     setColumns(await fetchData('/column'))
     setTasks(await fetchData('/tasks'))
-    setLoading(false)
+    setLoading(!loading)
   }
 
   /*
@@ -105,6 +108,13 @@ const BoardContainer = ({
     }
   }, [columns, tasks])
 
+  useEffect(() => {
+    if (taskIdToDisplay !== '') {
+      setShowTask(true)
+      setTaskToDisplay(tasks.find(task => task.task_id === taskIdToDisplay))
+    }
+  }, [taskIdToDisplay])
+
   return (
     <StyledContainer>
       {loading ?
@@ -128,6 +138,7 @@ const BoardContainer = ({
                 length={column.tasks.length}
                 showProperties={showProperties}
                 setLoading={setLoading}
+                setTaskIdToDisplay={setTaskIdToDisplay}
               />
             ))}
           </ColumnContainer>

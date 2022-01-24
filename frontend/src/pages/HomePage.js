@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { AddButton, PropertiesButton } from '../components/Buttons'
 import PageContent from '../containers/PageContent'
 import BoardContainer from '../containers/BoardContainer'
-import AddTaskModal from '../components/modals/AddTaskModal'
+import TaskModal from '../components/modals/TaskModal'
 import FormQuestions from '../components/FormQuestions/FormQuestions'
+import TaskCard from '../components/TaskCard'
 import {
   MenuWrapper, ButtonWrapper, ToastWrapper, BoardContainerWrapper, PropertyToast
 } from '../styles/HomePage'
@@ -14,11 +15,14 @@ const HomePage = () => {
   const [showToast, setShowToast] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  const initialProperties = JSON.parse(sessionStorage.getItem('showProperties')) || ['Status', 'Tags']
-  const [showProperties, setShowProperties] = useState(initialProperties)
+  const [showTask, setShowTask] = useState(false)
+  const [taskToDisplay, setTaskToDisplay] = useState({})
 
   const setModalDisplay = () => setShowModal(!showModal)
   const setToastDisplay = () => setShowToast(!showToast)
+
+  const initialProperties = JSON.parse(sessionStorage.getItem('showProperties')) || ['Status', 'Tags']
+  const [showProperties, setShowProperties] = useState(initialProperties)
 
   const allTaskProperties = Object.values(FormQuestions).map(q => {
     return { id: q.id, label: q.label }
@@ -27,6 +31,10 @@ const HomePage = () => {
   useEffect(() => {
     sessionStorage.setItem('showProperties', JSON.stringify(showProperties))
   }, [showProperties])
+
+  useEffect(() => {
+    console.log('t', showTask)
+  }, [showTask])
 
   return (
     <PageContent>
@@ -54,13 +62,23 @@ const HomePage = () => {
           showProperties={showProperties}
           loading={loading}
           setLoading={setLoading}
+          setShowTask={setShowTask}
+          setTaskToDisplay={setTaskToDisplay}
         />
       </BoardContainerWrapper>
-      <AddTaskModal
+      <TaskModal
         show={showModal}
         loading={loading}
         setLoading={setLoading}
         onHide={setModalDisplay}
+      />
+      <TaskCard
+        show={showTask}
+        onHide={() => {
+          setShowTask(false)
+          setTaskToDisplay({})
+        }}
+        task={taskToDisplay}
       />
     </PageContent>
   )
