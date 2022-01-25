@@ -32,10 +32,6 @@ const HomePage = () => {
     sessionStorage.setItem('showProperties', JSON.stringify(showProperties))
   }, [showProperties])
 
-  useEffect(() => {
-    console.log('t', showTask)
-  }, [showTask])
-
   return (
     <PageContent>
       <BoardContainerWrapper>
@@ -68,7 +64,6 @@ const HomePage = () => {
       </BoardContainerWrapper>
       <TaskModal
         show={showModal}
-        loading={loading}
         setLoading={setLoading}
         onHide={setModalDisplay}
       />
@@ -79,6 +74,7 @@ const HomePage = () => {
           setTaskToDisplay({})
         }}
         task={taskToDisplay}
+        setLoading={setLoading}
       />
     </PageContent>
   )

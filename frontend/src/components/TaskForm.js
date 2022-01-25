@@ -28,14 +28,27 @@ const formatSectionQuestions = (questions, setAnswer) => {
 }
 
 const TaskForm = ({
-  setModalFormState
+  setModalFormState,
+  task
 }) => {
   const [answer, setAnswer] = useState({})
   const [formAnswers, setFormAnswers] = useState({})
 
+  const taskFormQuestions = JSON.parse(JSON.stringify(FormQuestions))
+
+  // if a task has been passed through to the form (view/edit state), pass through current question values to questions
+  if (task && Object.keys(task).length > 0) {
+    Object.entries(taskFormQuestions).forEach(([fqId, fqProps]) => {
+      const questionInTask = Object.entries(task).find((q) => q[0] === fqProps.id)
+      taskFormQuestions[fqId].value = questionInTask[1]
+    })
+  }
+
   // for each "section" of the form, create an array of its child questions
   const sectionQuestions = FORM_SECTIONS.map(section =>
-    Object.values(FormQuestions).filter(question => question.section === section))
+    Object.values(taskFormQuestions).filter(question => question.section === section))
+
+  console.log('s', FormQuestions)
 
   useEffect(() => {
     if (Object.keys(answer).length > 0) {
