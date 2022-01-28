@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form, Tabs, Tab } from 'react-bootstrap'
 
 import SelectQuestion from './SelectQuestion'
@@ -6,17 +6,24 @@ import MultiSelectQuestion from './MultiSelectQuestion'
 import MarkdownBox from '../markdown/MarkdownBox'
 import { handleChange } from '../../utils/utils'
 
-const textQ = (id, setState) => (
-  <Form.Control
-    required
-    type="text"
-    onChange={(e) => handleChange(setState, id, e.target.value)}
-  />
-)
+const textQ = (id, setState, priorValue) => {
+  const [value, setValue] = useState(priorValue || '')
+  return (
+    <Form.Control
+      required
+      type="text"
+      value={value}
+      onChange={(e) => {
+        handleChange(setState, id, e.target.value)
+        setValue(e.target.value)
+      }}
+    />
+  )
+}
 
-const textareaQ = (id, setState) => {
+const textareaQ = (id, setState, priorValue) => {
   const [activeKey, setActiveKey] = useState('write')
-  const [value, setValue] = useState(``)
+  const [value, setValue] = useState(priorValue || ``)
 
   return (
     <Tabs
@@ -49,15 +56,25 @@ const textareaQ = (id, setState) => {
   )
 }
 
-const dateQ = (id, setState) => (
-  <Form.Control
-    required
-    type="date"
-    onChange={(e) => handleChange(setState, id, e.target.value)}
-  />
-)
+const dateQ = (id, setState, priorValue) => {
+  const [value, setValue] = useState(priorValue || '')
+  useEffect(() => {
+    console.log('dateQ value', value)
+  }, [value])
+  return (
+    <Form.Control
+      required
+      type="date"
+      value={value}
+      onChange={(e) => {
+        handleChange(setState, id, e.target.value)
+        setValue(e.target.value)
+      }}
+    />
+  )
+}
 
-const singleSelect = (id, path, table, setAnswer) => (
+const singleSelect = (id, path, table, setAnswer, value) => (
   <SelectQuestion
     required
     id={id}
@@ -67,7 +84,7 @@ const singleSelect = (id, path, table, setAnswer) => (
   />
 )
 
-const multiSelect = (id, path, table, setAnswer) => (
+const multiSelect = (id, path, table, setAnswer, value) => (
   <MultiSelectQuestion
     required
     id={id}
@@ -77,18 +94,19 @@ const multiSelect = (id, path, table, setAnswer) => (
   />
 )
 
-export const renderQuestion = (id, type, path, table, setAnswer) => {
+export const renderQuestion = (id, type, path, table, setAnswer, value) => {
+  // console.log('vrq', value)
   switch (type) {
     case 'text':
-      return textQ(id, setAnswer)
+      return textQ(id, setAnswer, value)
     case 'textarea':
-      return textareaQ(id, setAnswer)
+      return textareaQ(id, setAnswer, value)
     case 'date':
-      return dateQ(id, setAnswer)
+      return dateQ(id, setAnswer, value)
     case 'singleSelect':
-      return singleSelect(id, path, table, setAnswer)
+      return singleSelect(id, path, table, setAnswer, value)
     case 'multiSelect':
-      return multiSelect(id, path, table, setAnswer)
+      return multiSelect(id, path, table, setAnswer, value)
     default:
       return null
   }

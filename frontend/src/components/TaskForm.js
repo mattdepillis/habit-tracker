@@ -15,10 +15,10 @@ const formatSectionQuestions = (questions, setAnswer) => {
     <Fragment>
       {sectionRows.map((row, i) => (
         <Row key={i}>
-          {row.map(({ id, label, type, path, table }) => (
+          {row.map(({ id, label, type, path, table, value }) => (
             <Form.Group key={id} as={Col}>
               <Form.Label>{label}</Form.Label>
-              {renderQuestion(id, type, path, table, setAnswer)}
+              {renderQuestion(id, type, path, table, setAnswer, value)}
             </Form.Group>
           ))}
         </Row>
@@ -47,8 +47,6 @@ const TaskForm = ({
   // for each "section" of the form, create an array of its child questions
   const sectionQuestions = FORM_SECTIONS.map(section =>
     Object.values(taskFormQuestions).filter(question => question.section === section))
-
-  console.log('s', FormQuestions)
 
   useEffect(() => {
     if (Object.keys(answer).length > 0) {

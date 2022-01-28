@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { AddButton, PropertiesButton } from '../components/Buttons'
 import PageContent from '../containers/PageContent'
 import BoardContainer from '../containers/BoardContainer'
-import TaskModal from '../components/modals/TaskModal'
+import AddTaskModal from '../components/modals/AddTaskModal'
 import FormQuestions from '../components/FormQuestions/FormQuestions'
-import TaskCard from '../components/TaskCard'
+import TaskCard from '../components/modals/TaskCard'
 import {
   MenuWrapper, ButtonWrapper, ToastWrapper, BoardContainerWrapper, PropertyToast
 } from '../styles/HomePage'
@@ -59,10 +59,11 @@ const HomePage = () => {
           loading={loading}
           setLoading={setLoading}
           setShowTask={setShowTask}
+          taskToDisplay={taskToDisplay}
           setTaskToDisplay={setTaskToDisplay}
         />
       </BoardContainerWrapper>
-      <TaskModal
+      <AddTaskModal
         show={showModal}
         setLoading={setLoading}
         onHide={setModalDisplay}

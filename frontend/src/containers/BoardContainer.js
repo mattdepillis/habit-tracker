@@ -12,6 +12,7 @@ const BoardContainer = ({
   loading,
   setLoading,
   setShowTask,
+  taskToDisplay,
   setTaskToDisplay
 }) => {
   const [columns, setColumns] = useState([])
@@ -114,6 +115,10 @@ const BoardContainer = ({
       setTaskToDisplay(tasks.find(task => task.task_id === taskIdToDisplay))
     }
   }, [taskIdToDisplay])
+
+  useEffect(() => {
+    if (Object.keys(taskToDisplay).length === 0) setTaskIdToDisplay('')
+  }, [taskToDisplay])
 
   return (
     <StyledContainer>
