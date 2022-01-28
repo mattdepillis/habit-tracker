@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Form, Tabs, Tab } from 'react-bootstrap'
 
 import SelectQuestion from './SelectQuestion'
 import MultiSelectQuestion from './MultiSelectQuestion'
 import MarkdownBox from '../markdown/MarkdownBox'
-import { handleChange } from '../../utils/utils'
+import { handleChange, formatDateAsYMD } from '../../utils/utils'
 
 const textQ = (id, setState, priorValue) => {
   const [value, setValue] = useState(priorValue || '')
+
   return (
     <Form.Control
       required
@@ -57,10 +58,8 @@ const textareaQ = (id, setState, priorValue) => {
 }
 
 const dateQ = (id, setState, priorValue) => {
-  const [value, setValue] = useState(priorValue || '')
-  useEffect(() => {
-    console.log('dateQ value', value)
-  }, [value])
+  const [value, setValue] = useState(formatDateAsYMD(priorValue) || '')
+
   return (
     <Form.Control
       required
@@ -95,7 +94,6 @@ const multiSelect = (id, path, table, setAnswer, value) => (
 )
 
 export const renderQuestion = (id, type, path, table, setAnswer, value) => {
-  // console.log('vrq', value)
   switch (type) {
     case 'text':
       return textQ(id, setAnswer, value)
